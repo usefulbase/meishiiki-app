@@ -3,11 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>メガネ明視域計算アプリ</title>
 
 <style>
-
 body {
   margin: 0;
   font-family: system-ui, sans-serif;
@@ -250,7 +248,6 @@ svg {
 }
 
 @media (max-width: 700px) {
-
   .grid {
     grid-template-columns: 1fr;
   }
@@ -259,278 +256,188 @@ svg {
     max-width: 100%;
   }
 }
-
 </style>
 </head>
 
 <body>
 
 <div class="app">
+  <h1>メガネ明視域計算アプリ</h1>
 
-<h1>メガネ明視域計算アプリ</h1>
+  <p class="lead">
+    完全矯正値・処方値・加入度・調節力から明視域を計算します。
+  </p>
 
-<p class="lead">
-完全矯正値・処方値・加入度・調節力から明視域を計算します。
-</p>
+  <section class="panel">
+    <h2>入力モード</h2>
 
-<section class="panel">
+    <label>
+      入力方法
+      <select id="inputMode">
+        <option value="singleEye">片眼入力</option>
+        <option value="bothEyes">左右同時入力</option>
+      </select>
+    </label>
 
-<h2>入力モード</h2>
+    <div id="eyeSelectArea">
+      <label>
+        計算する眼
+        <select id="selectedEye">
+          <option value="R">右眼 R</option>
+          <option value="L">左眼 L</option>
+        </select>
+      </label>
+    </div>
+  </section>
 
-<label>
-入力方法
-<select id="inputMode">
-<option value="singleEye">片眼入力</option>
-<option value="bothEyes">左右同時入力</option>
-</select>
-</label>
+  <section class="panel">
+    <h2>レンズ種別</h2>
 
-<div id="eyeSelectArea">
+    <label>
+      レンズタイプ
+      <select id="lensType">
+        <option value="single">単焦点</option>
+        <option value="progressive">遠近両用</option>
+        <option value="indoor">中近・室内用</option>
+      </select>
+    </label>
+  </section>
 
-<label>
-計算する眼
-<select id="selectedEye">
-<option value="R">右眼 R</option>
-<option value="L">左眼 L</option>
-</select>
-</label>
+  <section class="panel eye-block" id="rightEyeBlock">
+    <h2>右眼 R</h2>
 
-</div>
+    <h3>完全矯正値（7A）</h3>
+    <div class="grid">
+      <label>S<input class="num-input" id="fullS_R" type="text" value="-3.00" readonly></label>
+      <label>C<input class="num-input" id="fullC_R" type="text" value="0.00" readonly></label>
+    </div>
 
-</section>
+    <h3>処方値</h3>
+    <div class="grid">
+      <label>S<input class="num-input" id="rxS_R" type="text" value="-3.00" readonly></label>
+      <label>C<input class="num-input" id="rxC_R" type="text" value="0.00" readonly></label>
+    </div>
+  </section>
 
-<section class="panel">
+  <section class="panel eye-block" id="leftEyeBlock">
+    <h2>左眼 L</h2>
 
-<h2>レンズ種別</h2>
+    <h3>完全矯正値（7A）</h3>
+    <div class="grid">
+      <label>S<input class="num-input" id="fullS_L" type="text" value="-3.00" readonly></label>
+      <label>C<input class="num-input" id="fullC_L" type="text" value="0.00" readonly></label>
+    </div>
 
-<label>
-レンズタイプ
-<select id="lensType">
-<option value="single">単焦点</option>
-<option value="progressive">遠近両用</option>
-<option value="indoor">中近・室内用</option>
-</select>
-</label>
+    <h3>処方値</h3>
+    <div class="grid">
+      <label>S<input class="num-input" id="rxS_L" type="text" value="-3.00" readonly></label>
+      <label>C<input class="num-input" id="rxC_L" type="text" value="0.00" readonly></label>
+    </div>
+  </section>
 
-</section>
+  <section class="panel">
+    <h2>調節力</h2>
 
-<section class="panel eye-block" id="rightEyeBlock">
+    <label><input type="radio" name="accMode" value="measured" checked>実測値を使う</label>
+    <label><input type="radio" name="accMode" value="age">年齢から計算する</label>
 
-<h2>右眼 R</h2>
+    <div class="grid">
+      <label>実測調節力 D<input class="num-input" id="measuredAcc" type="text" value="2.50" readonly></label>
+      <label>年齢<input class="num-input" id="age" type="text" value="45" readonly></label>
+    </div>
 
-<h3>完全矯正値（7A）</h3>
+    <label>
+      使用する調節力
+      <select id="accUseRate">
+        <option value="1">すべて使う</option>
+        <option value="0.6667">2/3使う</option>
+        <option value="0.5">1/2使う</option>
+      </select>
+    </label>
 
-<div class="grid">
+    <p class="note">
+      年齢から計算する場合は Morgan/Hofstetter の最小調節力：15 − 0.25 × 年齢 を使用します。
+    </p>
+  </section>
 
-<label>
-S
-<input class="num-input" id="fullS_R" type="text" value="-3.00" readonly>
-</label>
+  <section class="panel">
+    <h2>加入度・中間部設定</h2>
 
-<label>
-C
-<input class="num-input" id="fullC_R" type="text" value="0.00" readonly>
-</label>
+    <div class="grid">
+      <label>加入度 ADD<input class="num-input" id="addPower" type="text" value="2.00" readonly></label>
 
-</div>
+      <label>
+        FP加入変化率プリセット
+        <select id="fpPreset">
+          <option value="custom">任意入力</option>
+          <option value="25">中近（遠方重視）25%</option>
+          <option value="40">中近（近方重視）40%</option>
+        </select>
+      </label>
+    </div>
 
-<h3>処方値</h3>
+    <label>FPでの加入変化率 %<input class="num-input" id="fpRate" type="text" value="50" readonly></label>
+  </section>
 
-<div class="grid">
+  <button class="main-btn" onclick="calculate()">計算する</button>
 
-<label>
-S
-<input class="num-input" id="rxS_R" type="text" value="-3.00" readonly>
-</label>
-
-<label>
-C
-<input class="num-input" id="rxC_R" type="text" value="0.00" readonly>
-</label>
-
-</div>
-
-</section>
-
-<section class="panel eye-block" id="leftEyeBlock">
-
-<h2>左眼 L</h2>
-
-<h3>完全矯正値（7A）</h3>
-
-<div class="grid">
-
-<label>
-S
-<input class="num-input" id="fullS_L" type="text" value="-3.00" readonly>
-</label>
-
-<label>
-C
-<input class="num-input" id="fullC_L" type="text" value="0.00" readonly>
-</label>
-
-</div>
-
-<h3>処方値</h3>
-
-<div class="grid">
-
-<label>
-S
-<input class="num-input" id="rxS_L" type="text" value="-3.00" readonly>
-</label>
-
-<label>
-C
-<input class="num-input" id="rxC_L" type="text" value="0.00" readonly>
-</label>
-
-</div>
-
-</section>
-
-<section class="panel">
-
-<h2>調節力</h2>
-
-<label>
-<input type="radio" name="accMode" value="measured" checked>
-実測値を使う
-</label>
-
-<label>
-<input type="radio" name="accMode" value="age">
-年齢から計算する
-</label>
-
-<div class="grid">
-
-<label>
-実測調節力 D
-<input class="num-input" id="measuredAcc" type="text" value="2.50" readonly>
-</label>
-
-<label>
-年齢
-<input class="num-input" id="age" type="text" value="45" readonly>
-</label>
-
-</div>
-
-<label>
-使用する調節力
-<select id="accUseRate">
-<option value="1">すべて使う</option>
-<option value="0.6667">2/3使う</option>
-<option value="0.5">1/2使う</option>
-</select>
-</label>
-
-</section>
-
-<section class="panel">
-
-<h2>加入度・中間部設定</h2>
-
-<div class="grid">
-
-<label>
-加入度 ADD
-<input class="num-input" id="addPower" type="text" value="2.00" readonly>
-</label>
-
-<label>
-FP加入変化率プリセット
-<select id="fpPreset">
-<option value="custom">任意入力</option>
-<option value="25">中近（遠方重視）25%</option>
-<option value="40">中近（近方重視）40%</option>
-</select>
-</label>
-
-</div>
-
-<label>
-FPでの加入変化率 %
-<input class="num-input" id="fpRate" type="text" value="50" readonly>
-</label>
-
-</section>
-
-<button class="main-btn" onclick="calculate()">
-計算する
-</button>
-
-<section class="result-area">
-
-<h2>計算結果</h2>
-
-<div id="result"></div>
-
-</section>
-
+  <section class="result-area">
+    <h2>計算結果</h2>
+    <div id="result"></div>
+  </section>
 </div>
 
 <div id="keypad" class="keypad">
+  <div class="keypad-title" id="keypadTitle">数値入力</div>
+  <div class="keypad-display" id="keypadDisplay"></div>
 
-<div class="keypad-title" id="keypadTitle">
-数値入力
-</div>
+  <div class="keypad-grid">
+    <button onclick="pressKey('7')">7</button>
+    <button onclick="pressKey('8')">8</button>
+    <button onclick="pressKey('9')">9</button>
+    <button onclick="backspaceKey()">⌫</button>
 
-<div class="keypad-display" id="keypadDisplay"></div>
+    <button onclick="pressKey('4')">4</button>
+    <button onclick="pressKey('5')">5</button>
+    <button onclick="pressKey('6')">6</button>
+    <button onclick="clearKey()">C</button>
 
-<div class="keypad-grid">
+    <button onclick="pressKey('1')">1</button>
+    <button onclick="pressKey('2')">2</button>
+    <button onclick="pressKey('3')">3</button>
+    <button onclick="toggleSign()">±</button>
 
-<button onclick="pressKey('7')">7</button>
-<button onclick="pressKey('8')">8</button>
-<button onclick="pressKey('9')">9</button>
-<button onclick="backspaceKey()">⌫</button>
+    <button onclick="pressKey('0')">0</button>
+    <button onclick="pressKey('.')">.</button>
+    <button onclick="stepValue(-0.25)">-0.25</button>
+    <button onclick="stepValue(0.25)">+0.25</button>
+  </div>
 
-<button onclick="pressKey('4')">4</button>
-<button onclick="pressKey('5')">5</button>
-<button onclick="pressKey('6')">6</button>
-<button onclick="clearKey()">C</button>
-
-<button onclick="pressKey('1')">1</button>
-<button onclick="pressKey('2')">2</button>
-<button onclick="pressKey('3')">3</button>
-<button onclick="toggleSign()">±</button>
-
-<button onclick="pressKey('0')">0</button>
-<button onclick="pressKey('.')">.</button>
-<button onclick="stepValue(-0.25)">-0.25</button>
-<button onclick="stepValue(0.25)">+0.25</button>
-
-</div>
-
-<button class="done-btn" onclick="closeKeypad()">
-決定
-</button>
-
+  <button class="done-btn" onclick="closeKeypad()">決定</button>
 </div>
 
 <script>
+let activeInput = null;
 
-alert("let activeInput = null;
+function setupEvents() {
+  document.querySelectorAll("input, select").forEach(el => {
+    el.addEventListener("input", () => {
+      handleFpPreset();
+      calculate();
+    });
 
-document.querySelectorAll("input, select").forEach(el => {
-  el.addEventListener("input", () => {
-    handleFpPreset();
-    calculate();
+    el.addEventListener("change", () => {
+      handleFpPreset();
+      calculate();
+    });
   });
 
-  el.addEventListener("change", () => {
-    handleFpPreset();
-    calculate();
+  document.querySelectorAll(".num-input").forEach(input => {
+    input.addEventListener("click", () => {
+      openKeypad(input);
+    });
   });
-});
-
-document.querySelectorAll(".num-input").forEach(input => {
-  input.addEventListener("click", () => {
-    openKeypad(input);
-  });
-});
+}
 
 function openKeypad(input) {
   activeInput = input;
@@ -542,7 +449,9 @@ function openKeypad(input) {
   input.classList.add("active");
 
   document.getElementById("keypad").classList.add("show");
-  document.getElementById("keypadTitle").textContent = input.closest("label").innerText.trim();
+  document.getElementById("keypadTitle").textContent =
+    input.closest("label").innerText.trim();
+
   updateKeypadDisplay();
 }
 
@@ -558,7 +467,8 @@ function closeKeypad() {
 }
 
 function updateKeypadDisplay() {
-  document.getElementById("keypadDisplay").textContent = activeInput ? activeInput.value : "";
+  document.getElementById("keypadDisplay").textContent =
+    activeInput ? activeInput.value : "";
 }
 
 function pressKey(key) {
@@ -566,7 +476,12 @@ function pressKey(key) {
 
   if (key === "." && activeInput.value.includes(".")) return;
 
-  activeInput.value += key;
+  if (activeInput.value === "0" && key !== ".") {
+    activeInput.value = key;
+  } else {
+    activeInput.value += key;
+  }
+
   updateKeypadDisplay();
   handleFpPreset();
   calculate();
@@ -662,9 +577,7 @@ function formatDistance(meter) {
 
   const cm = meter * 100;
 
-  if (cm >= 100) {
-    return meter.toFixed(2) + "m";
-  }
+  if (cm >= 100) return meter.toFixed(2) + "m";
 
   return Math.round(cm) + "cm";
 }
@@ -926,7 +839,6 @@ function makeEyeResult(eyeData, lensType, accommodation, addPower, fpRate) {
   );
 
   const enrichedZones = enrichZonesWithRange(zones, accommodation);
-
   const diagramHtml = drawLensDiagram(lensType, enrichedZones);
 
   let html = `
@@ -1018,9 +930,9 @@ function calculate() {
   document.getElementById("result").innerHTML = html;
 }
 
+setupEvents();
 toggleMode();
-calculate();");
-
+calculate();
 </script>
 
 </body>
