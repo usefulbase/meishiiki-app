@@ -29,10 +29,10 @@ th{background:#f8fafc}
 .badge{display:inline-block;padding:4px 9px;border-radius:999px;background:#dbeafe;color:#1d4ed8;font-size:13px;font-weight:bold}
 .warning{color:#dc2626;font-weight:bold}
 .diagram-wrap{display:flex;justify-content:center;margin:12px 0 20px}
-svg{max-width:620px;width:100%}
-.zone-text{font-size:13px;font-weight:bold;fill:#0f172a}
-.side-text{font-size:14px;font-weight:bold;fill:#0f172a}
-.side-small{font-size:13px;fill:#334155}
+svg{max-width:760px;width:100%}
+.zone-text{font-size:17px;font-weight:bold;fill:#0f172a}
+.side-text{font-size:18px;font-weight:bold;fill:#0f172a}
+.side-small{font-size:16px;fill:#334155}
 .eye-title{font-size:20px;font-weight:bold;margin:26px 0 8px;color:#1d4ed8}
 .keypad{position:fixed;left:0;right:0;bottom:-320px;background:white;border-top:1px solid #cbd5e1;box-shadow:0 -6px 20px rgba(0,0,0,.15);padding:12px;transition:bottom .2s;z-index:9999}
 .keypad.show{bottom:0}
@@ -476,13 +476,13 @@ function drawLensDiagram(lensType,zones){
   if(lensType==="single"){
     return `
       <div class="diagram-wrap">
-        <svg viewBox="0 0 460 320">
+        <svg viewBox="0 0 520 360">
           ${bostonOutline}
           <ellipse cx="145" cy="165" rx="95" ry="62" fill="#dbeafe" />
-          <text x="145" y="158" text-anchor="middle" class="zone-text">単焦点</text>
-          <text x="145" y="180" text-anchor="middle" class="zone-text">${single.rangeText}</text>
-          <text x="300" y="150" class="side-text">処方度数</text>
-          <text x="300" y="173" class="side-small">${single.rangeText}</text>
+          <text x="145" y="156" text-anchor="middle" class="zone-text">単焦点</text>
+          <text x="145" y="182" text-anchor="middle" class="zone-text">${single.rangeText}</text>
+          <text x="300" y="145" class="side-text">処方度数</text>
+          <text x="300" y="174" class="side-small">${single.rangeText}</text>
         </svg>
       </div>
     `;
@@ -491,20 +491,23 @@ function drawLensDiagram(lensType,zones){
   if(lensType==="progressive"){
     return `
       <div class="diagram-wrap">
-        <svg viewBox="0 0 460 320">
+        <svg viewBox="0 0 520 360">
           ${bostonOutline}
           <ellipse cx="145" cy="118" rx="82" ry="30" fill="#dbeafe" />
           <path d="M120 150 C132 138,158 138,170 150 C166 175,158 198,154 215 C150 230,140 230,136 215 C132 198,124 175,120 150 Z" fill="#bfdbfe"/>
           <ellipse cx="145" cy="225" rx="48" ry="25" fill="#93c5fd" />
-          <text x="145" y="114" text-anchor="middle" class="zone-text">遠用</text>
-          <text x="145" y="132" text-anchor="middle" class="zone-text">${distance.rangeText}</text>
-          <text x="145" y="185" text-anchor="middle" class="zone-text">累進帯</text>
-          <text x="145" y="222" text-anchor="middle" class="zone-text">近用</text>
-          <text x="145" y="242" text-anchor="middle" class="zone-text">${near.rangeText}</text>
-          <text x="300" y="105" class="side-text">遠用部分</text>
-          <text x="300" y="128" class="side-small">${distance.rangeText}</text>
-          <text x="300" y="215" class="side-text">近用部分</text>
-          <text x="300" y="238" class="side-small">${near.rangeText}</text>
+
+          <text x="145" y="112" text-anchor="middle" class="zone-text">遠用</text>
+          <text x="145" y="137" text-anchor="middle" class="zone-text">${distance.rangeText}</text>
+
+          <text x="145" y="219" text-anchor="middle" class="zone-text">近用</text>
+          <text x="145" y="246" text-anchor="middle" class="zone-text">${near.rangeText}</text>
+
+          <text x="300" y="103" class="side-text">遠用部分</text>
+          <text x="300" y="132" class="side-small">${distance.rangeText}</text>
+
+          <text x="300" y="213" class="side-text">近用部分</text>
+          <text x="300" y="242" class="side-small">${near.rangeText}</text>
         </svg>
       </div>
     `;
@@ -512,23 +515,29 @@ function drawLensDiagram(lensType,zones){
 
   return `
     <div class="diagram-wrap">
-      <svg viewBox="0 0 460 320">
+      <svg viewBox="0 0 520 360">
         ${bostonOutline}
         <ellipse cx="145" cy="105" rx="78" ry="28" fill="#dbeafe" />
         <ellipse cx="145" cy="165" rx="64" ry="30" fill="#bfdbfe" />
         <ellipse cx="145" cy="225" rx="48" ry="25" fill="#93c5fd" />
-        <text x="145" y="101" text-anchor="middle" class="zone-text">遠用</text>
-        <text x="145" y="119" text-anchor="middle" class="zone-text">${distance.rangeText}</text>
-        <text x="145" y="161" text-anchor="middle" class="zone-text">FP</text>
-        <text x="145" y="181" text-anchor="middle" class="zone-text">${fp.rangeText}</text>
-        <text x="145" y="222" text-anchor="middle" class="zone-text">近用</text>
-        <text x="145" y="242" text-anchor="middle" class="zone-text">${near.rangeText}</text>
-        <text x="300" y="92" class="side-text">遠用部分</text>
-        <text x="300" y="115" class="side-small">${distance.rangeText}</text>
-        <text x="300" y="155" class="side-text">FP</text>
-        <text x="300" y="178" class="side-small">${fp.rangeText}</text>
-        <text x="300" y="215" class="side-text">近用部分</text>
-        <text x="300" y="238" class="side-small">${near.rangeText}</text>
+
+        <text x="145" y="99" text-anchor="middle" class="zone-text">遠用</text>
+        <text x="145" y="124" text-anchor="middle" class="zone-text">${distance.rangeText}</text>
+
+        <text x="145" y="159" text-anchor="middle" class="zone-text">FP</text>
+        <text x="145" y="186" text-anchor="middle" class="zone-text">${fp.rangeText}</text>
+
+        <text x="145" y="219" text-anchor="middle" class="zone-text">近用</text>
+        <text x="145" y="246" text-anchor="middle" class="zone-text">${near.rangeText}</text>
+
+        <text x="300" y="90" class="side-text">遠用部分</text>
+        <text x="300" y="119" class="side-small">${distance.rangeText}</text>
+
+        <text x="300" y="153" class="side-text">FP</text>
+        <text x="300" y="182" class="side-small">${fp.rangeText}</text>
+
+        <text x="300" y="213" class="side-text">近用部分</text>
+        <text x="300" y="242" class="side-small">${near.rangeText}</text>
       </svg>
     </div>
   `;
