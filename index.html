@@ -1,0 +1,1027 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>メガネ明視域計算アプリ</title>
+
+<style>
+
+body {
+  margin: 0;
+  font-family: system-ui, sans-serif;
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+.app {
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 24px;
+  padding-bottom: 260px;
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+.lead {
+  text-align: center;
+  color: #64748b;
+  margin-bottom: 24px;
+}
+
+.panel,
+.result-area {
+  background: white;
+  padding: 18px;
+  border-radius: 18px;
+  margin-bottom: 16px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+}
+
+.panel h2,
+.result-area h2 {
+  font-size: 18px;
+  margin-top: 0;
+}
+
+.panel h3 {
+  font-size: 15px;
+  color: #334155;
+  margin-bottom: 6px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+input,
+select {
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 6px;
+  padding: 12px;
+  font-size: 16px;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  background: white;
+}
+
+.num-input {
+  background: #f8fafc;
+  cursor: pointer;
+}
+
+.num-input.active {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px #dbeafe;
+}
+
+input[type="radio"] {
+  width: auto;
+  margin-right: 6px;
+}
+
+.note {
+  color: #64748b;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.main-btn {
+  width: 100%;
+  padding: 15px;
+  font-size: 17px;
+  border: none;
+  border-radius: 14px;
+  background: #2563eb;
+  color: white;
+  font-weight: bold;
+  margin-bottom: 20px;
+  cursor: pointer;
+}
+
+.summary-box {
+  background: #eff6ff;
+  border-left: 5px solid #2563eb;
+  padding: 14px;
+  border-radius: 12px;
+  margin-bottom: 18px;
+  line-height: 1.7;
+}
+
+.table-wrap {
+  overflow-x: auto;
+  margin-bottom: 24px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 720px;
+}
+
+th,
+td {
+  border-bottom: 1px solid #e2e8f0;
+  padding: 12px;
+  text-align: left;
+}
+
+th {
+  background: #f8fafc;
+}
+
+.badge {
+  display: inline-block;
+  padding: 4px 9px;
+  border-radius: 999px;
+  background: #dbeafe;
+  color: #1d4ed8;
+  font-size: 13px;
+  font-weight: bold;
+}
+
+.warning {
+  color: #dc2626;
+  font-weight: bold;
+}
+
+.diagram-wrap {
+  display: flex;
+  justify-content: center;
+  margin: 12px 0 20px;
+}
+
+svg {
+  max-width: 620px;
+  width: 100%;
+}
+
+.zone-text {
+  font-size: 13px;
+  font-weight: bold;
+  fill: #0f172a;
+}
+
+.side-text {
+  font-size: 14px;
+  font-weight: bold;
+  fill: #0f172a;
+}
+
+.side-small {
+  font-size: 13px;
+  fill: #334155;
+}
+
+.eye-title {
+  font-size: 20px;
+  font-weight: bold;
+  margin: 26px 0 8px;
+  color: #1d4ed8;
+}
+
+.keypad {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: -320px;
+  background: #ffffff;
+  border-top: 1px solid #cbd5e1;
+  box-shadow: 0 -6px 20px rgba(0,0,0,0.15);
+  padding: 12px;
+  transition: bottom 0.2s;
+  z-index: 9999;
+}
+
+.keypad.show {
+  bottom: 0;
+}
+
+.keypad-title {
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+.keypad-display {
+  background: #f1f5f9;
+  border-radius: 10px;
+  padding: 10px;
+  text-align: center;
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.keypad-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.keypad button {
+  padding: 14px;
+  font-size: 17px;
+  border: none;
+  border-radius: 12px;
+  background: #e2e8f0;
+  font-weight: bold;
+}
+
+.keypad .done-btn {
+  width: 100%;
+  margin-top: 10px;
+  background: #2563eb;
+  color: white;
+}
+
+@media (max-width: 700px) {
+
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  svg {
+    max-width: 100%;
+  }
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<h1>メガネ明視域計算アプリ</h1>
+
+<p class="lead">
+完全矯正値・処方値・加入度・調節力から明視域を計算します。
+</p>
+
+<section class="panel">
+
+<h2>入力モード</h2>
+
+<label>
+入力方法
+<select id="inputMode">
+<option value="singleEye">片眼入力</option>
+<option value="bothEyes">左右同時入力</option>
+</select>
+</label>
+
+<div id="eyeSelectArea">
+
+<label>
+計算する眼
+<select id="selectedEye">
+<option value="R">右眼 R</option>
+<option value="L">左眼 L</option>
+</select>
+</label>
+
+</div>
+
+</section>
+
+<section class="panel">
+
+<h2>レンズ種別</h2>
+
+<label>
+レンズタイプ
+<select id="lensType">
+<option value="single">単焦点</option>
+<option value="progressive">遠近両用</option>
+<option value="indoor">中近・室内用</option>
+</select>
+</label>
+
+</section>
+
+<section class="panel eye-block" id="rightEyeBlock">
+
+<h2>右眼 R</h2>
+
+<h3>完全矯正値（7A）</h3>
+
+<div class="grid">
+
+<label>
+S
+<input class="num-input" id="fullS_R" type="text" value="-3.00" readonly>
+</label>
+
+<label>
+C
+<input class="num-input" id="fullC_R" type="text" value="0.00" readonly>
+</label>
+
+</div>
+
+<h3>処方値</h3>
+
+<div class="grid">
+
+<label>
+S
+<input class="num-input" id="rxS_R" type="text" value="-3.00" readonly>
+</label>
+
+<label>
+C
+<input class="num-input" id="rxC_R" type="text" value="0.00" readonly>
+</label>
+
+</div>
+
+</section>
+
+<section class="panel eye-block" id="leftEyeBlock">
+
+<h2>左眼 L</h2>
+
+<h3>完全矯正値（7A）</h3>
+
+<div class="grid">
+
+<label>
+S
+<input class="num-input" id="fullS_L" type="text" value="-3.00" readonly>
+</label>
+
+<label>
+C
+<input class="num-input" id="fullC_L" type="text" value="0.00" readonly>
+</label>
+
+</div>
+
+<h3>処方値</h3>
+
+<div class="grid">
+
+<label>
+S
+<input class="num-input" id="rxS_L" type="text" value="-3.00" readonly>
+</label>
+
+<label>
+C
+<input class="num-input" id="rxC_L" type="text" value="0.00" readonly>
+</label>
+
+</div>
+
+</section>
+
+<section class="panel">
+
+<h2>調節力</h2>
+
+<label>
+<input type="radio" name="accMode" value="measured" checked>
+実測値を使う
+</label>
+
+<label>
+<input type="radio" name="accMode" value="age">
+年齢から計算する
+</label>
+
+<div class="grid">
+
+<label>
+実測調節力 D
+<input class="num-input" id="measuredAcc" type="text" value="2.50" readonly>
+</label>
+
+<label>
+年齢
+<input class="num-input" id="age" type="text" value="45" readonly>
+</label>
+
+</div>
+
+<label>
+使用する調節力
+<select id="accUseRate">
+<option value="1">すべて使う</option>
+<option value="0.6667">2/3使う</option>
+<option value="0.5">1/2使う</option>
+</select>
+</label>
+
+</section>
+
+<section class="panel">
+
+<h2>加入度・中間部設定</h2>
+
+<div class="grid">
+
+<label>
+加入度 ADD
+<input class="num-input" id="addPower" type="text" value="2.00" readonly>
+</label>
+
+<label>
+FP加入変化率プリセット
+<select id="fpPreset">
+<option value="custom">任意入力</option>
+<option value="25">中近（遠方重視）25%</option>
+<option value="40">中近（近方重視）40%</option>
+</select>
+</label>
+
+</div>
+
+<label>
+FPでの加入変化率 %
+<input class="num-input" id="fpRate" type="text" value="50" readonly>
+</label>
+
+</section>
+
+<button class="main-btn" onclick="calculate()">
+計算する
+</button>
+
+<section class="result-area">
+
+<h2>計算結果</h2>
+
+<div id="result"></div>
+
+</section>
+
+</div>
+
+<div id="keypad" class="keypad">
+
+<div class="keypad-title" id="keypadTitle">
+数値入力
+</div>
+
+<div class="keypad-display" id="keypadDisplay"></div>
+
+<div class="keypad-grid">
+
+<button onclick="pressKey('7')">7</button>
+<button onclick="pressKey('8')">8</button>
+<button onclick="pressKey('9')">9</button>
+<button onclick="backspaceKey()">⌫</button>
+
+<button onclick="pressKey('4')">4</button>
+<button onclick="pressKey('5')">5</button>
+<button onclick="pressKey('6')">6</button>
+<button onclick="clearKey()">C</button>
+
+<button onclick="pressKey('1')">1</button>
+<button onclick="pressKey('2')">2</button>
+<button onclick="pressKey('3')">3</button>
+<button onclick="toggleSign()">±</button>
+
+<button onclick="pressKey('0')">0</button>
+<button onclick="pressKey('.')">.</button>
+<button onclick="stepValue(-0.25)">-0.25</button>
+<button onclick="stepValue(0.25)">+0.25</button>
+
+</div>
+
+<button class="done-btn" onclick="closeKeypad()">
+決定
+</button>
+
+</div>
+
+<script>
+
+alert("let activeInput = null;
+
+document.querySelectorAll("input, select").forEach(el => {
+  el.addEventListener("input", () => {
+    handleFpPreset();
+    calculate();
+  });
+
+  el.addEventListener("change", () => {
+    handleFpPreset();
+    calculate();
+  });
+});
+
+document.querySelectorAll(".num-input").forEach(input => {
+  input.addEventListener("click", () => {
+    openKeypad(input);
+  });
+});
+
+function openKeypad(input) {
+  activeInput = input;
+
+  document.querySelectorAll(".num-input").forEach(el => {
+    el.classList.remove("active");
+  });
+
+  input.classList.add("active");
+
+  document.getElementById("keypad").classList.add("show");
+  document.getElementById("keypadTitle").textContent = input.closest("label").innerText.trim();
+  updateKeypadDisplay();
+}
+
+function closeKeypad() {
+  document.getElementById("keypad").classList.remove("show");
+
+  if (activeInput) {
+    activeInput.classList.remove("active");
+  }
+
+  activeInput = null;
+  calculate();
+}
+
+function updateKeypadDisplay() {
+  document.getElementById("keypadDisplay").textContent = activeInput ? activeInput.value : "";
+}
+
+function pressKey(key) {
+  if (!activeInput) return;
+
+  if (key === "." && activeInput.value.includes(".")) return;
+
+  activeInput.value += key;
+  updateKeypadDisplay();
+  handleFpPreset();
+  calculate();
+}
+
+function backspaceKey() {
+  if (!activeInput) return;
+
+  activeInput.value = activeInput.value.slice(0, -1);
+  updateKeypadDisplay();
+  handleFpPreset();
+  calculate();
+}
+
+function clearKey() {
+  if (!activeInput) return;
+
+  activeInput.value = "";
+  updateKeypadDisplay();
+  handleFpPreset();
+  calculate();
+}
+
+function toggleSign() {
+  if (!activeInput) return;
+
+  if (activeInput.value.startsWith("-")) {
+    activeInput.value = activeInput.value.slice(1);
+  } else {
+    activeInput.value = "-" + activeInput.value;
+  }
+
+  updateKeypadDisplay();
+  calculate();
+}
+
+function stepValue(step) {
+  if (!activeInput) return;
+
+  const current = Number(activeInput.value) || 0;
+  const next = Math.round((current + step) * 100) / 100;
+
+  activeInput.value = next.toFixed(2);
+  updateKeypadDisplay();
+  calculate();
+}
+
+function handleFpPreset() {
+  const preset = document.getElementById("fpPreset");
+  const fpRate = document.getElementById("fpRate");
+
+  if (!preset || !fpRate) return;
+
+  if (preset.value !== "custom") {
+    fpRate.value = preset.value;
+  }
+}
+
+function getValue(id) {
+  return Number(document.getElementById(id).value);
+}
+
+function sphericalEquivalent(s, c) {
+  return s + c / 2;
+}
+
+function getAccommodation() {
+  const mode = document.querySelector('input[name="accMode"]:checked').value;
+  const useRate = getValue("accUseRate") || 1;
+
+  let baseAcc;
+
+  if (mode === "measured") {
+    baseAcc = getValue("measuredAcc");
+  } else {
+    const age = getValue("age");
+    baseAcc = 15 - 0.25 * age;
+  }
+
+  const usedAcc = Math.max(0, baseAcc * useRate);
+
+  return Math.round(usedAcc * 4) / 4;
+}
+
+function formatPower(value) {
+  if (value > 0) return "+" + value.toFixed(2) + "D";
+  return value.toFixed(2) + "D";
+}
+
+function formatDistance(meter) {
+  if (meter === Infinity) return "∞";
+  if (meter === null) return "実距離なし";
+
+  const cm = meter * 100;
+
+  if (cm >= 100) {
+    return meter.toFixed(2) + "m";
+  }
+
+  return Math.round(cm) + "cm";
+}
+
+function calculateRange(relativePower, accommodation) {
+  const p = relativePower;
+  const acc = accommodation;
+
+  if (-p > acc) {
+    return {
+      far: null,
+      near: null,
+      message: "調節力不足で明視域なし"
+    };
+  }
+
+  const far = p > 0 ? 1 / p : Infinity;
+  const nearVergence = -p - acc;
+
+  let near;
+
+  if (nearVergence < 0) {
+    near = -1 / nearVergence;
+  } else if (nearVergence === 0) {
+    near = Infinity;
+  } else {
+    near = null;
+  }
+
+  return {
+    far,
+    near,
+    message: ""
+  };
+}
+
+function getZones(lensType, baseRelative, addPower, fpRate) {
+  if (lensType === "single") {
+    return [
+      {
+        lens: "単焦点",
+        part: "処方度数",
+        key: "single",
+        relative: baseRelative
+      }
+    ];
+  }
+
+  if (lensType === "progressive") {
+    return [
+      {
+        lens: "遠近両用",
+        part: "遠用部分",
+        key: "distance",
+        relative: baseRelative
+      },
+      {
+        lens: "遠近両用",
+        part: "近用部分",
+        key: "near",
+        relative: baseRelative + addPower
+      }
+    ];
+  }
+
+  return [
+    {
+      lens: "中近・室内用",
+      part: "遠用部分",
+      key: "distance",
+      relative: baseRelative
+    },
+    {
+      lens: "中近・室内用",
+      part: "フィッティングポイント",
+      key: "fp",
+      relative: baseRelative + addPower * fpRate
+    },
+    {
+      lens: "中近・室内用",
+      part: "近用部分",
+      key: "near",
+      relative: baseRelative + addPower
+    }
+  ];
+}
+
+function getEyeData(eye) {
+  const fullSE = sphericalEquivalent(
+    getValue(`fullS_${eye}`),
+    getValue(`fullC_${eye}`)
+  );
+
+  const rxSE = sphericalEquivalent(
+    getValue(`rxS_${eye}`),
+    getValue(`rxC_${eye}`)
+  );
+
+  return {
+    eye,
+    fullSE,
+    rxSE,
+    baseRelative: rxSE - fullSE
+  };
+}
+
+function toggleMode() {
+  const mode = document.getElementById("inputMode").value;
+  const selectedEye = document.getElementById("selectedEye").value;
+
+  const eyeSelectArea = document.getElementById("eyeSelectArea");
+  const rightBlock = document.getElementById("rightEyeBlock");
+  const leftBlock = document.getElementById("leftEyeBlock");
+
+  if (mode === "singleEye") {
+    eyeSelectArea.style.display = "block";
+    rightBlock.style.display = selectedEye === "R" ? "block" : "none";
+    leftBlock.style.display = selectedEye === "L" ? "block" : "none";
+  } else {
+    eyeSelectArea.style.display = "none";
+    rightBlock.style.display = "block";
+    leftBlock.style.display = "block";
+  }
+}
+
+function enrichZonesWithRange(zones, accommodation) {
+  return zones.map(zone => {
+    const range = calculateRange(zone.relative, accommodation);
+    const farText = formatDistance(range.far);
+    const nearText = formatDistance(range.near);
+
+    return {
+      ...zone,
+      range,
+      farText,
+      nearText,
+      rangeText: range.message ? "明視域なし" : `${farText}〜${nearText}`
+    };
+  });
+}
+
+function drawLensDiagram(lensType, zones) {
+  const find = key => zones.find(zone => zone.key === key);
+
+  const single = find("single");
+  const distance = find("distance");
+  const fp = find("fp");
+  const near = find("near");
+
+  const bostonOutline = `
+    <path
+      d="
+        M50 120
+        C70 70, 210 65, 240 115
+        C270 165, 235 235, 185 250
+        C140 263, 75 248, 50 210
+        C32 180, 35 145, 50 120 Z
+      "
+      fill="#ffffff"
+      stroke="#2563eb"
+      stroke-width="3"
+    />
+  `;
+
+  if (lensType === "single") {
+    return `
+      <div class="diagram-wrap">
+        <svg viewBox="0 0 460 320">
+          ${bostonOutline}
+
+          <ellipse cx="145" cy="165" rx="95" ry="62" fill="#dbeafe" />
+
+          <text x="145" y="158" text-anchor="middle" class="zone-text">単焦点</text>
+          <text x="145" y="180" text-anchor="middle" class="zone-text">${single.rangeText}</text>
+
+          <text x="300" y="150" class="side-text">処方度数</text>
+          <text x="300" y="173" class="side-small">${single.rangeText}</text>
+        </svg>
+      </div>
+    `;
+  }
+
+  if (lensType === "progressive") {
+    return `
+      <div class="diagram-wrap">
+        <svg viewBox="0 0 460 320">
+          ${bostonOutline}
+
+          <ellipse cx="145" cy="118" rx="82" ry="30" fill="#dbeafe" />
+
+          <path
+            d="
+              M120 150
+              C132 138, 158 138, 170 150
+              C166 175, 158 198, 154 215
+              C150 230, 140 230, 136 215
+              C132 198, 124 175, 120 150 Z
+            "
+            fill="#bfdbfe"
+          />
+
+          <ellipse cx="145" cy="225" rx="48" ry="25" fill="#93c5fd" />
+
+          <text x="145" y="114" text-anchor="middle" class="zone-text">遠用</text>
+          <text x="145" y="132" text-anchor="middle" class="zone-text">${distance.rangeText}</text>
+
+          <text x="145" y="185" text-anchor="middle" class="zone-text">累進帯</text>
+
+          <text x="145" y="222" text-anchor="middle" class="zone-text">近用</text>
+          <text x="145" y="242" text-anchor="middle" class="zone-text">${near.rangeText}</text>
+
+          <text x="300" y="105" class="side-text">遠用部分</text>
+          <text x="300" y="128" class="side-small">${distance.rangeText}</text>
+
+          <text x="300" y="215" class="side-text">近用部分</text>
+          <text x="300" y="238" class="side-small">${near.rangeText}</text>
+        </svg>
+      </div>
+    `;
+  }
+
+  return `
+    <div class="diagram-wrap">
+      <svg viewBox="0 0 460 320">
+        ${bostonOutline}
+
+        <ellipse cx="145" cy="105" rx="78" ry="28" fill="#dbeafe" />
+        <ellipse cx="145" cy="165" rx="64" ry="30" fill="#bfdbfe" />
+        <ellipse cx="145" cy="225" rx="48" ry="25" fill="#93c5fd" />
+
+        <text x="145" y="101" text-anchor="middle" class="zone-text">遠用</text>
+        <text x="145" y="119" text-anchor="middle" class="zone-text">${distance.rangeText}</text>
+
+        <text x="145" y="161" text-anchor="middle" class="zone-text">FP</text>
+        <text x="145" y="181" text-anchor="middle" class="zone-text">${fp.rangeText}</text>
+
+        <text x="145" y="222" text-anchor="middle" class="zone-text">近用</text>
+        <text x="145" y="242" text-anchor="middle" class="zone-text">${near.rangeText}</text>
+
+        <text x="300" y="92" class="side-text">遠用部分</text>
+        <text x="300" y="115" class="side-small">${distance.rangeText}</text>
+
+        <text x="300" y="155" class="side-text">FP</text>
+        <text x="300" y="178" class="side-small">${fp.rangeText}</text>
+
+        <text x="300" y="215" class="side-text">近用部分</text>
+        <text x="300" y="238" class="side-small">${near.rangeText}</text>
+      </svg>
+    </div>
+  `;
+}
+
+function makeEyeResult(eyeData, lensType, accommodation, addPower, fpRate) {
+  const zones = getZones(
+    lensType,
+    eyeData.baseRelative,
+    addPower,
+    fpRate
+  );
+
+  const enrichedZones = enrichZonesWithRange(zones, accommodation);
+
+  const diagramHtml = drawLensDiagram(lensType, enrichedZones);
+
+  let html = `
+    <div class="eye-title">
+      ${eyeData.eye === "R" ? "右眼 R" : "左眼 L"}
+    </div>
+
+    ${diagramHtml}
+
+    <div class="summary-box">
+      完全矯正値 SE：<strong>${formatPower(eyeData.fullSE)}</strong><br>
+      処方値 SE：<strong>${formatPower(eyeData.rxSE)}</strong><br>
+      処方差：<strong>${formatPower(eyeData.baseRelative)}</strong><br>
+      使用調節力：<strong>${formatPower(accommodation)}</strong><br>
+      加入度：<strong>${formatPower(addPower)}</strong><br>
+      FP加入変化率：<strong>${Math.round(fpRate * 100)}%</strong>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>レンズ種別</th>
+            <th>部分</th>
+            <th>完全矯正との差</th>
+            <th>遠点</th>
+            <th>近点</th>
+            <th>明視域</th>
+          </tr>
+        </thead>
+        <tbody>
+  `;
+
+  enrichedZones.forEach(zone => {
+    html += `
+      <tr>
+        <td>${zone.lens}</td>
+        <td><span class="badge">${zone.part}</span></td>
+        <td>${formatPower(zone.relative)}</td>
+        <td>${zone.farText}</td>
+        <td>${zone.nearText}</td>
+        <td>
+          ${
+            zone.range.message
+              ? `<span class="warning">${zone.range.message}</span>`
+              : zone.rangeText
+          }
+        </td>
+      </tr>
+    `;
+  });
+
+  html += `
+        </tbody>
+      </table>
+    </div>
+  `;
+
+  return html;
+}
+
+function calculate() {
+  toggleMode();
+
+  const mode = document.getElementById("inputMode").value;
+  const lensType = document.getElementById("lensType").value;
+  const selectedEye = document.getElementById("selectedEye").value;
+
+  const accommodation = getAccommodation();
+  const addPower = getValue("addPower");
+  const fpRate = getValue("fpRate") / 100;
+
+  const eyes = mode === "singleEye" ? [selectedEye] : ["R", "L"];
+
+  let html = "";
+
+  eyes.forEach(eye => {
+    const eyeData = getEyeData(eye);
+
+    html += makeEyeResult(
+      eyeData,
+      lensType,
+      accommodation,
+      addPower,
+      fpRate
+    );
+  });
+
+  document.getElementById("result").innerHTML = html;
+}
+
+toggleMode();
+calculate();");
+
+</script>
+
+</body>
+</html>
