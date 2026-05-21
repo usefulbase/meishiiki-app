@@ -6,201 +6,227 @@
 <title>メガネ明視域計算アプリ</title>
 
 <style>
-body{margin:0;font-family:system-ui,sans-serif;background:#f1f5f9;color:#0f172a}
-.app{max-width:920px;margin:0 auto;padding:24px;padding-bottom:260px}
-h1{text-align:center;margin-bottom:8px}
-.lead{text-align:center;color:#64748b;margin-bottom:24px}
-.panel,.result-area{background:white;padding:18px;border-radius:18px;margin-bottom:16px;box-shadow:0 4px 12px rgba(0,0,0,.06)}
-.panel h2,.result-area h2{font-size:18px;margin-top:0}
-.panel h3{font-size:15px;color:#334155;margin-bottom:6px}
-.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:14px}
-label{display:block;font-weight:bold;margin-bottom:10px}
-input,select{width:100%;box-sizing:border-box;margin-top:6px;padding:12px;font-size:16px;border:1px solid #cbd5e1;border-radius:12px;background:white}
-.num-input{background:#f8fafc;cursor:pointer}
-.num-input.active{border-color:#2563eb;box-shadow:0 0 0 3px #dbeafe}
+:root{
+  --blue:#2563eb;
+  --blue2:#1d4ed8;
+  --bg:#f4f7fb;
+  --text:#0f172a;
+  --muted:#64748b;
+  --line:#dbe3ef;
+  --card:#ffffff;
+  --soft:#eff6ff;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:linear-gradient(180deg,#f8fbff,#eef3f9);color:var(--text)}
+.app{max-width:1120px;margin:0 auto;padding:24px 16px 280px}
+.header{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:18px}
+.title-wrap h1{font-size:30px;margin:0 0 6px;letter-spacing:.02em}
+.title-wrap p{margin:0;color:var(--muted);font-size:14px}
+.icon{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:999px;background:var(--blue);color:#fff;margin-right:8px}
+.panel-grid{display:grid;grid-template-columns:1.1fr .9fr 1.45fr 1.1fr;gap:12px;margin-bottom:14px}
+.panel,.result-area,.eye-panel{background:rgba(255,255,255,.92);border:1px solid #e5edf7;border-radius:18px;padding:16px;box-shadow:0 10px 30px rgba(15,23,42,.07)}
+.panel h2,.result-area h2,.eye-panel h2{font-size:17px;margin:0 0 14px;display:flex;align-items:center;color:#0f2a5f}
+.panel h3{font-size:14px;margin:12px 0 8px;color:#334155}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+label{display:block;font-weight:650;font-size:14px;margin-bottom:12px;color:#263449}
+input,select{width:100%;margin-top:7px;padding:12px 13px;font-size:16px;border:1px solid #ccd8e8;border-radius:11px;background:#fff;color:var(--text)}
+input:disabled,select:disabled,.is-disabled input,.is-disabled select{background:#f1f5f9!important;color:#94a3b8!important;border-color:#e2e8f0!important}
+.is-disabled label,.disabled-row{color:#94a3b8!important}
+.num-input{background:#fbfdff;cursor:pointer}
+.num-input.active{border-color:var(--blue);box-shadow:0 0 0 3px #dbeafe}
+.radio-row{display:flex;gap:16px;flex-wrap:wrap}
+.radio-row label{font-weight:650}
 input[type=radio]{width:auto;margin-right:6px}
-.note{color:#64748b;font-size:14px;line-height:1.6}
-.main-btn{width:100%;padding:15px;font-size:17px;border:none;border-radius:14px;background:#2563eb;color:white;font-weight:bold;margin-bottom:20px;cursor:pointer}
-.summary-box{background:#eff6ff;border-left:5px solid #2563eb;padding:14px;border-radius:12px;margin-bottom:18px;line-height:1.7}
-.table-wrap{overflow-x:auto;margin-bottom:24px}
-table{width:100%;border-collapse:collapse;min-width:720px}
-th,td{border-bottom:1px solid #e2e8f0;padding:12px;text-align:left}
-th{background:#f8fafc}
-.badge{display:inline-block;padding:4px 9px;border-radius:999px;background:#dbeafe;color:#1d4ed8;font-size:13px;font-weight:bold}
-.warning{color:#dc2626;font-weight:bold}
-.diagram-wrap{display:flex;justify-content:center;margin:12px 0 20px}
-svg{max-width:760px;width:100%}
-.zone-text{font-size:17px;font-weight:bold;fill:#0f172a}
-.side-text{font-size:18px;font-weight:bold;fill:#0f172a}
-.side-small{font-size:16px;fill:#334155}
-.eye-title{font-size:20px;font-weight:bold;margin:26px 0 8px;color:#1d4ed8}
-.keypad{position:fixed;left:0;right:0;bottom:-320px;background:white;border-top:1px solid #cbd5e1;box-shadow:0 -6px 20px rgba(0,0,0,.15);padding:12px;transition:bottom .2s;z-index:9999}
+.segment{display:grid;grid-template-columns:1fr 1fr;border:1px solid #ccd8e8;border-radius:12px;overflow:hidden;margin-top:7px}
+.segment button{padding:11px;border:0;background:#fff;font-weight:700;color:#334155}
+.segment button.active{background:#eaf2ff;color:var(--blue2)}
+.note{color:var(--muted);font-size:13px;line-height:1.55;margin:8px 0 0}
+.main-btn{border:0;border-radius:14px;background:linear-gradient(135deg,#2563eb,#1d4ed8);color:#fff;font-weight:800;font-size:16px;padding:14px 22px;box-shadow:0 8px 18px rgba(37,99,235,.25)}
+.eye-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
+.eye-panel h2{color:var(--blue2)}
+.result-area{padding:18px}
+.eye-title{font-size:22px;font-weight:850;color:var(--blue2);margin:8px 0 14px;display:flex;align-items:center}
+.eye-result{border:1px solid #dbe3ef;border-radius:16px;padding:14px;margin-bottom:18px;background:#fff}
+.result-flex{display:grid;grid-template-columns:1.35fr 1fr;gap:16px;align-items:center}
+.diagram-wrap{display:flex;justify-content:center;align-items:center}
+svg{width:100%;max-width:640px}
+.zone-text{font-size:21px;font-weight:850;fill:#0f172a}
+.zone-small{font-size:19px;font-weight:750;fill:#0f172a}
+.side-box{border-left:1px solid #dbe3ef;padding-left:18px;display:grid;gap:12px}
+.side-item{display:grid;grid-template-columns:1fr;gap:4px}
+.side-title{font-size:20px;font-weight:850;color:#0f2a5f}
+.side-value{font-size:20px;font-weight:750}
+.summary-box{border:1px solid #dbe3ef;border-radius:14px;padding:12px;margin-top:12px;background:#fbfdff}
+.summary-row{display:flex;justify-content:space-between;gap:12px;border-bottom:1px solid #edf2f7;padding:8px 0;font-size:14px}
+.summary-row:last-child{border-bottom:0}
+.summary-row.muted{color:#94a3b8}
+.table-wrap{overflow-x:auto;margin-top:12px}
+table{width:100%;border-collapse:collapse;min-width:720px;border:1px solid #dbe3ef;border-radius:12px;overflow:hidden}
+th,td{border-bottom:1px solid #e2e8f0;padding:11px;text-align:center}
+th{background:#f8fafc;font-size:13px}
+td{font-size:15px}
+.badge{display:inline-block;padding:4px 10px;border-radius:999px;background:#dbeafe;color:#1d4ed8;font-size:13px;font-weight:800}
+.warning{color:#dc2626;font-weight:800}
+.big-result{font-weight:900;font-size:20px;color:var(--blue2)}
+.footer-note{font-size:13px;color:var(--muted);line-height:1.6;margin:10px 0 0}
+.keypad{position:fixed;left:0;right:0;bottom:-330px;background:#fff;border-top:1px solid #cbd5e1;box-shadow:0 -8px 24px rgba(15,23,42,.18);padding:12px;transition:.2s;z-index:9999}
 .keypad.show{bottom:0}
-.keypad-title{font-weight:bold;text-align:center;margin-bottom:8px}
-.keypad-display{background:#f1f5f9;border-radius:10px;padding:10px;text-align:center;font-size:20px;font-weight:bold;margin-bottom:10px}
+.keypad-title{text-align:center;font-weight:800;margin-bottom:8px}
+.keypad-display{background:#f1f5f9;border-radius:12px;padding:10px;text-align:center;font-size:22px;font-weight:900;margin-bottom:10px}
 .keypad-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
-.keypad button{padding:14px;font-size:17px;border:none;border-radius:12px;background:#e2e8f0;font-weight:bold}
-.keypad .done-btn{width:100%;margin-top:10px;background:#2563eb;color:white}
-@media(max-width:700px){.grid{grid-template-columns:1fr}svg{max-width:100%}}
+.keypad button{padding:14px;font-size:17px;border:0;border-radius:12px;background:#e2e8f0;font-weight:850}
+.keypad .done-btn{width:100%;margin-top:10px;background:var(--blue);color:white}
+@media(max-width:900px){.panel-grid,.eye-grid,.result-flex{grid-template-columns:1fr}.header{align-items:flex-start}.main-btn{width:100%}.side-box{border-left:0;border-top:1px solid #dbe3ef;padding-left:0;padding-top:12px}}
 </style>
 </head>
 
 <body>
-
 <div class="app">
-  <h1>メガネ明視域計算アプリ</h1>
-  <p class="lead">完全矯正値・処方値・加入度・調節力から明視域を計算します。</p>
+  <div class="header">
+    <div class="title-wrap">
+      <h1><span class="icon">👁</span>メガネ明視域計算アプリ</h1>
+      <p>完全矯正値・処方値・加入度・調節力から明視域を計算します</p>
+    </div>
+    <button class="main-btn" onclick="calculate()">↻ 計算する</button>
+  </div>
 
-  <section class="panel">
-    <h2>入力モード</h2>
-    <label>入力方法
-      <select id="inputMode">
-        <option value="singleEye">片眼入力</option>
-        <option value="bothEyes">左右同時入力</option>
-      </select>
-    </label>
-
-    <div id="eyeSelectArea">
-      <label>計算する眼
-        <select id="selectedEye">
-          <option value="R">右眼 R</option>
-          <option value="L">左眼 L</option>
+  <div class="panel-grid">
+    <section class="panel">
+      <h2>👥 入力モード</h2>
+      <label>入力方法
+        <select id="inputMode">
+          <option value="singleEye">片眼入力</option>
+          <option value="bothEyes">左右同時入力</option>
         </select>
       </label>
-    </div>
-  </section>
+      <div id="eyeSelectArea">
+        <label>計算する眼
+          <select id="selectedEye">
+            <option value="R">右眼 R</option>
+            <option value="L">左眼 L</option>
+          </select>
+        </label>
+      </div>
+    </section>
 
-  <section class="panel">
-    <h2>レンズ種別</h2>
-    <label>レンズタイプ
-      <select id="lensType">
-        <option value="single">単焦点</option>
-        <option value="progressive">遠近両用</option>
-        <option value="indoor">中近・室内用</option>
-      </select>
-    </label>
-  </section>
+    <section class="panel">
+      <h2>👓 レンズ種別</h2>
+      <label>レンズタイプ
+        <select id="lensType">
+          <option value="single">単焦点</option>
+          <option value="progressive">遠近両用</option>
+          <option value="indoor">中近・室内用</option>
+        </select>
+      </label>
+    </section>
 
-  <section class="panel eye-block" id="rightEyeBlock">
-    <h2>右眼 R</h2>
-    <h3>完全矯正値（7A）</h3>
-    <div class="grid">
-      <label>S<input class="num-input" id="fullS_R" type="text" value="-3.00" readonly></label>
-      <label>C<input class="num-input" id="fullC_R" type="text" value="0.00" readonly></label>
-    </div>
-    <h3>処方値</h3>
-    <div class="grid">
-      <label>S<input class="num-input" id="rxS_R" type="text" value="-3.00" readonly></label>
-      <label>C<input class="num-input" id="rxC_R" type="text" value="0.00" readonly></label>
-    </div>
-  </section>
+    <section class="panel">
+      <h2>🎯 調節力</h2>
+      <div class="radio-row">
+        <label><input type="radio" name="accMode" value="measured" checked>実測値を使う</label>
+        <label><input type="radio" name="accMode" value="age">年齢から計算する</label>
+      </div>
+      <div class="grid">
+        <label id="measuredLabel">実測調節力 D<input class="num-input" id="measuredAcc" type="text" value="2.50" readonly></label>
+        <label id="ageLabel">年齢<input class="num-input" id="age" type="text" value="45" readonly></label>
+      </div>
+      <div class="grid">
+        <label id="ageFormulaLabel">年齢計算方式
+          <select id="ageFormula">
+            <option value="ishihara">石原式目安</option>
+            <option value="hofstetterMin">Hofstetter最小値</option>
+          </select>
+        </label>
+        <label>使用する調節力
+          <select id="accUseRate">
+            <option value="1">すべて使う</option>
+            <option value="0.6667">2/3使う</option>
+            <option value="0.5">1/2使う</option>
+          </select>
+        </label>
+      </div>
+      <p class="note">Hofstetter最小値：15 − 0.25×年齢。石原式目安は年齢別目安から線形補間。</p>
+    </section>
 
-  <section class="panel eye-block" id="leftEyeBlock">
-    <h2>左眼 L</h2>
-    <h3>完全矯正値（7A）</h3>
-    <div class="grid">
-      <label>S<input class="num-input" id="fullS_L" type="text" value="-3.00" readonly></label>
-      <label>C<input class="num-input" id="fullC_L" type="text" value="0.00" readonly></label>
-    </div>
-    <h3>処方値</h3>
-    <div class="grid">
-      <label>S<input class="num-input" id="rxS_L" type="text" value="-3.00" readonly></label>
-      <label>C<input class="num-input" id="rxC_L" type="text" value="0.00" readonly></label>
-    </div>
-  </section>
-
-  <section class="panel">
-    <h2>調節力</h2>
-
-    <label><input type="radio" name="accMode" value="measured" checked>実測値を使う</label>
-    <label><input type="radio" name="accMode" value="age">年齢から計算する</label>
-
-    <div class="grid">
-      <label>実測調節力 D<input class="num-input" id="measuredAcc" type="text" value="2.50" readonly></label>
-      <label>年齢<input class="num-input" id="age" type="text" value="45" readonly></label>
-    </div>
-
-    <label>年齢計算方式
-      <select id="ageFormula">
-        <option value="ishihara">石原式目安</option>
-        <option value="hofstetterMin">Hofstetter最小値</option>
-      </select>
-    </label>
-
-    <label>使用する調節力
-      <select id="accUseRate">
-        <option value="1">すべて使う</option>
-        <option value="0.6667">2/3使う</option>
-        <option value="0.5">1/2使う</option>
-      </select>
-    </label>
-
-    <p class="note">
-      Hofstetter最小値：15 − 0.25 × 年齢。<br>
-      石原式目安：20歳10D、30歳7D、40歳4.5D、50歳1.5D、60歳1.0Dを目安に線形補間。
-    </p>
-  </section>
-
-  <section class="panel">
-    <h2>加入度・中間部設定</h2>
-    <div class="grid">
-      <label>加入度 ADD<input class="num-input" id="addPower" type="text" value="2.00" readonly></label>
-      <label>FP加入変化率プリセット
+    <section class="panel">
+      <h2>➕ 加入度・中間部設定</h2>
+      <label id="addLabel">加入度 ADD<input class="num-input" id="addPower" type="text" value="2.00" readonly></label>
+      <label id="fpPresetLabel">フィッティングポイント加入変化率プリセット
         <select id="fpPreset">
           <option value="custom">任意入力</option>
           <option value="25">中近（遠方重視）25%</option>
           <option value="40">中近（近方重視）40%</option>
         </select>
       </label>
-    </div>
-    <label>FPでの加入変化率 %<input class="num-input" id="fpRate" type="text" value="50" readonly></label>
-  </section>
+      <label id="fpRateLabel">フィッティングポイントでの加入変化率 %
+        <input class="num-input" id="fpRate" type="text" value="50" readonly>
+      </label>
+    </section>
+  </div>
 
-  <button class="main-btn" onclick="calculate()">計算する</button>
+  <div class="eye-grid">
+    <section class="eye-panel eye-block" id="rightEyeBlock">
+      <h2>👁 右眼 R</h2>
+      <div class="grid">
+        <div>
+          <h3>完全矯正値（7A）</h3>
+          <label>S<input class="num-input" id="fullS_R" type="text" value="-3.00" readonly></label>
+          <label>C<input class="num-input" id="fullC_R" type="text" value="0.00" readonly></label>
+        </div>
+        <div>
+          <h3>処方値</h3>
+          <label>S<input class="num-input" id="rxS_R" type="text" value="-3.00" readonly></label>
+          <label>C<input class="num-input" id="rxC_R" type="text" value="0.00" readonly></label>
+        </div>
+      </div>
+    </section>
+
+    <section class="eye-panel eye-block" id="leftEyeBlock">
+      <h2>👁 左眼 L</h2>
+      <div class="grid">
+        <div>
+          <h3>完全矯正値（7A）</h3>
+          <label>S<input class="num-input" id="fullS_L" type="text" value="-3.00" readonly></label>
+          <label>C<input class="num-input" id="fullC_L" type="text" value="0.00" readonly></label>
+        </div>
+        <div>
+          <h3>処方値</h3>
+          <label>S<input class="num-input" id="rxS_L" type="text" value="-3.00" readonly></label>
+          <label>C<input class="num-input" id="rxC_L" type="text" value="0.00" readonly></label>
+        </div>
+      </div>
+    </section>
+  </div>
 
   <section class="result-area">
-    <h2>計算結果</h2>
+    <h2>📊 計算結果</h2>
     <div id="result"></div>
+    <p class="footer-note">※ ∞は無限遠を表します。明視域は理論値であり、実際の見え方を保証するものではありません。</p>
   </section>
 </div>
 
 <div id="keypad" class="keypad">
   <div class="keypad-title" id="keypadTitle">数値入力</div>
   <div class="keypad-display" id="keypadDisplay"></div>
-
   <div class="keypad-grid">
-    <button onclick="pressKey('7')">7</button>
-    <button onclick="pressKey('8')">8</button>
-    <button onclick="pressKey('9')">9</button>
-    <button onclick="backspaceKey()">⌫</button>
-    <button onclick="pressKey('4')">4</button>
-    <button onclick="pressKey('5')">5</button>
-    <button onclick="pressKey('6')">6</button>
-    <button onclick="clearKey()">C</button>
-    <button onclick="pressKey('1')">1</button>
-    <button onclick="pressKey('2')">2</button>
-    <button onclick="pressKey('3')">3</button>
-    <button onclick="toggleSign()">±</button>
-    <button onclick="pressKey('0')">0</button>
-    <button onclick="pressKey('.')">.</button>
-    <button onclick="stepValue(-0.25)">-0.25</button>
-    <button onclick="stepValue(0.25)">+0.25</button>
+    <button onclick="pressKey('7')">7</button><button onclick="pressKey('8')">8</button><button onclick="pressKey('9')">9</button><button onclick="backspaceKey()">⌫</button>
+    <button onclick="pressKey('4')">4</button><button onclick="pressKey('5')">5</button><button onclick="pressKey('6')">6</button><button onclick="clearKey()">C</button>
+    <button onclick="pressKey('1')">1</button><button onclick="pressKey('2')">2</button><button onclick="pressKey('3')">3</button><button onclick="toggleSign()">±</button>
+    <button onclick="pressKey('0')">0</button><button onclick="pressKey('.')">.</button><button onclick="stepValue(-0.25)">-0.25</button><button onclick="stepValue(0.25)">+0.25</button>
   </div>
-
   <button class="done-btn" onclick="closeKeypad()">決定</button>
 </div>
 
 <script>
-let activeInput = null;
+let activeInput=null;
 
 function setupEvents(){
   document.querySelectorAll("input,select").forEach(el=>{
-    el.addEventListener("input",()=>{handleFpPreset();calculate();});
-    el.addEventListener("change",()=>{handleFpPreset();calculate();});
+    el.addEventListener("input",()=>{handleFpPreset();updateDisabledStates();calculate();});
+    el.addEventListener("change",()=>{handleFpPreset();updateDisabledStates();calculate();});
   });
-
   document.querySelectorAll(".num-input").forEach(input=>{
-    input.addEventListener("click",()=>openKeypad(input));
+    input.addEventListener("click",()=>{if(!input.disabled)openKeypad(input);});
   });
 }
 
@@ -212,418 +238,251 @@ function openKeypad(input){
   document.getElementById("keypadTitle").textContent=input.closest("label").innerText.trim();
   updateKeypadDisplay();
 }
+function closeKeypad(){document.getElementById("keypad").classList.remove("show");if(activeInput)activeInput.classList.remove("active");activeInput=null;calculate();}
+function updateKeypadDisplay(){document.getElementById("keypadDisplay").textContent=activeInput?activeInput.value:"";}
+function pressKey(key){if(!activeInput)return;if(key==="."&&activeInput.value.includes("."))return;if(activeInput.value==="0"&&key!==".")activeInput.value=key;else activeInput.value+=key;updateKeypadDisplay();handleFpPreset();calculate();}
+function backspaceKey(){if(!activeInput)return;activeInput.value=activeInput.value.slice(0,-1);updateKeypadDisplay();handleFpPreset();calculate();}
+function clearKey(){if(!activeInput)return;activeInput.value="";updateKeypadDisplay();handleFpPreset();calculate();}
+function toggleSign(){if(!activeInput)return;activeInput.value=activeInput.value.startsWith("-")?activeInput.value.slice(1):"-"+activeInput.value;updateKeypadDisplay();calculate();}
+function stepValue(step){if(!activeInput)return;const current=Number(activeInput.value)||0;activeInput.value=(Math.round((current+step)*100)/100).toFixed(2);updateKeypadDisplay();calculate();}
 
-function closeKeypad(){
-  document.getElementById("keypad").classList.remove("show");
-  if(activeInput) activeInput.classList.remove("active");
-  activeInput=null;
-  calculate();
+function getValue(id){return Number(document.getElementById(id).value);}
+function sphericalEquivalent(s,c){return s+c/2;}
+function formatPower(v){return (v>0?"+":"")+v.toFixed(2)+"D";}
+function formatDistance(m){
+  if(m===Infinity)return"∞";
+  if(m===null)return"実距離なし";
+  const cm=m*100;
+  return cm>=100?m.toFixed(2)+"m":Math.round(cm)+"cm";
 }
-
-function updateKeypadDisplay(){
-  document.getElementById("keypadDisplay").textContent=activeInput?activeInput.value:"";
-}
-
-function pressKey(key){
-  if(!activeInput) return;
-  if(key==="." && activeInput.value.includes(".")) return;
-  if(activeInput.value==="0" && key!==".") activeInput.value=key;
-  else activeInput.value+=key;
-  updateKeypadDisplay();
-  handleFpPreset();
-  calculate();
-}
-
-function backspaceKey(){
-  if(!activeInput) return;
-  activeInput.value=activeInput.value.slice(0,-1);
-  updateKeypadDisplay();
-  handleFpPreset();
-  calculate();
-}
-
-function clearKey(){
-  if(!activeInput) return;
-  activeInput.value="";
-  updateKeypadDisplay();
-  handleFpPreset();
-  calculate();
-}
-
-function toggleSign(){
-  if(!activeInput) return;
-  activeInput.value=activeInput.value.startsWith("-") ? activeInput.value.slice(1) : "-" + activeInput.value;
-  updateKeypadDisplay();
-  calculate();
-}
-
-function stepValue(step){
-  if(!activeInput) return;
-  const current=Number(activeInput.value)||0;
-  const next=Math.round((current+step)*100)/100;
-  activeInput.value=next.toFixed(2);
-  updateKeypadDisplay();
-  calculate();
+function formatRange(far,near,msg){
+  if(msg)return"明視域なし";
+  const f=formatDistance(far),n=formatDistance(near);
+  if(f===n)return f;
+  return `${f}〜${n}`;
 }
 
 function handleFpPreset(){
-  const preset=document.getElementById("fpPreset");
-  const fpRate=document.getElementById("fpRate");
-  if(!preset || !fpRate) return;
-  if(preset.value!=="custom") fpRate.value=preset.value;
+  const preset=document.getElementById("fpPreset"), fpRate=document.getElementById("fpRate");
+  if(preset.value!=="custom")fpRate.value=preset.value;
 }
 
-function getValue(id){
-  return Number(document.getElementById(id).value);
+function updateDisabledStates(){
+  const accMode=document.querySelector('input[name="accMode"]:checked').value;
+  const lensType=document.getElementById("lensType").value;
+  const measuredOn=accMode==="measured";
+  const ageOn=accMode==="age";
+  const isSingle=lensType==="single";
+  const isIndoor=lensType==="indoor";
+
+  setDisabled("measuredAcc",!measuredOn,"measuredLabel");
+  setDisabled("age",!ageOn,"ageLabel");
+  setDisabled("ageFormula",!ageOn,"ageFormulaLabel");
+
+  setDisabled("addPower",isSingle,"addLabel");
+  setDisabled("fpPreset",!isIndoor,"fpPresetLabel");
+  setDisabled("fpRate",!isIndoor,"fpRateLabel");
 }
 
-function sphericalEquivalent(s,c){
-  return s+c/2;
+function setDisabled(id,disabled,labelId){
+  const el=document.getElementById(id), label=document.getElementById(labelId);
+  if(!el)return;
+  el.disabled=disabled;
+  if(label)label.classList.toggle("is-disabled",disabled);
 }
 
 function getIshiharaAccommodation(age){
-  const points=[
-    {age:20,acc:10.0},
-    {age:30,acc:7.0},
-    {age:40,acc:4.5},
-    {age:50,acc:1.5},
-    {age:60,acc:1.0}
-  ];
-
-  if(age<=20) return 10.0;
-  if(age>=60) return 1.0;
-
-  for(let i=0;i<points.length-1;i++){
-    const a=points[i];
-    const b=points[i+1];
-
-    if(age>=a.age && age<=b.age){
-      const ratio=(age-a.age)/(b.age-a.age);
-      return a.acc+(b.acc-a.acc)*ratio;
+  const pts=[{age:20,acc:10},{age:30,acc:7},{age:40,acc:4.5},{age:50,acc:1.5},{age:60,acc:1}];
+  if(age<=20)return 10;
+  if(age>=60)return 1;
+  for(let i=0;i<pts.length-1;i++){
+    const a=pts[i],b=pts[i+1];
+    if(age>=a.age&&age<=b.age){
+      const r=(age-a.age)/(b.age-a.age);
+      return a.acc+(b.acc-a.acc)*r;
     }
   }
-
   return 0;
 }
 
 function getAgeAccommodation(){
   const age=getValue("age");
   const formula=document.getElementById("ageFormula").value;
-
-  let baseAcc;
-
-  if(formula==="hofstetterMin"){
-    baseAcc=15-0.25*age;
-  }else{
-    baseAcc=getIshiharaAccommodation(age);
-  }
-
-  return Math.max(0,baseAcc);
+  return Math.max(0,formula==="hofstetterMin"?15-0.25*age:getIshiharaAccommodation(age));
 }
-
 function getAccommodation(){
   const mode=document.querySelector('input[name="accMode"]:checked').value;
-  const useRate=getValue("accUseRate")||1;
-
-  let baseAcc;
-
-  if(mode==="measured") baseAcc=getValue("measuredAcc");
-  else baseAcc=getAgeAccommodation();
-
-  const usedAcc=Math.max(0,baseAcc*useRate);
-  return Math.round(usedAcc*4)/4;
+  const base=mode==="measured"?getValue("measuredAcc"):getAgeAccommodation();
+  const used=base*(getValue("accUseRate")||1);
+  return Math.round(Math.max(0,used)*4)/4;
 }
-
 function getBaseAccommodationLabel(){
   const mode=document.querySelector('input[name="accMode"]:checked').value;
-
-  if(mode==="measured"){
-    return `実測値 ${formatPower(getValue("measuredAcc"))}`;
-  }
-
+  if(mode==="measured")return `実測値 ${formatPower(getValue("measuredAcc"))}`;
   const formula=document.getElementById("ageFormula").value;
-  const base=getAgeAccommodation();
-
-  if(formula==="hofstetterMin"){
-    return `Hofstetter最小値 ${formatPower(Math.round(base*4)/4)}`;
-  }
-
-  return `石原式目安 ${formatPower(Math.round(base*4)/4)}`;
+  const base=Math.round(getAgeAccommodation()*4)/4;
+  return `${formula==="hofstetterMin"?"Hofstetter最小値":"石原式目安"} ${formatPower(base)}`;
+}
+function getUseRateLabel(){
+  const v=document.getElementById("accUseRate").value;
+  if(v==="1")return"100%";
+  if(v==="0.6667")return"2/3";
+  return"1/2";
 }
 
-function formatPower(value){
-  if(value>0) return "+"+value.toFixed(2)+"D";
-  return value.toFixed(2)+"D";
-}
-
-function formatDistance(meter){
-  if(meter===Infinity) return "∞";
-  if(meter===null) return "実距離なし";
-  const cm=meter*100;
-  if(cm>=100) return meter.toFixed(2)+"m";
-  return Math.round(cm)+"cm";
-}
-
-function calculateRange(relativePower,accommodation){
-  const p=relativePower;
-  const acc=accommodation;
-
-  if(-p>acc){
-    return {far:null,near:null,message:"調節力不足で明視域なし"};
-  }
-
-  const far=p>0 ? 1/p : Infinity;
-  const nearVergence=-p-acc;
-
+function calculateRange(p,acc){
+  if(-p>acc)return{far:null,near:null,message:"調節力不足で明視域なし"};
+  const far=p>0?1/p:Infinity;
+  const nv=-p-acc;
   let near;
-
-  if(nearVergence<0) near=-1/nearVergence;
-  else if(nearVergence===0) near=Infinity;
+  if(nv<0)near=-1/nv;
+  else if(nv===0)near=Infinity;
   else near=null;
-
-  return {far,near,message:""};
+  return{far,near,message:""};
 }
 
-function getZones(lensType,baseRelative,addPower,fpRate){
-  if(lensType==="single"){
-    return [{lens:"単焦点",part:"処方度数",key:"single",relative:baseRelative}];
-  }
-
-  if(lensType==="progressive"){
-    return [
-      {lens:"遠近両用",part:"遠用部分",key:"distance",relative:baseRelative},
-      {lens:"遠近両用",part:"近用部分",key:"near",relative:baseRelative+addPower}
-    ];
-  }
-
-  return [
-    {lens:"中近・室内用",part:"遠用部分",key:"distance",relative:baseRelative},
-    {lens:"中近・室内用",part:"フィッティングポイント",key:"fp",relative:baseRelative+addPower*fpRate},
-    {lens:"中近・室内用",part:"近用部分",key:"near",relative:baseRelative+addPower}
+function getZones(lensType,base,add,fpRate){
+  if(lensType==="single")return[{lens:"単焦点",part:"処方度数",key:"single",relative:base}];
+  if(lensType==="progressive")return[
+    {lens:"遠近両用",part:"遠用部分",key:"distance",relative:base},
+    {lens:"遠近両用",part:"近用部分",key:"near",relative:base+add}
+  ];
+  return[
+    {lens:"中近・室内用",part:"遠用部分",key:"distance",relative:base},
+    {lens:"中近・室内用",part:"フィッティングポイント",key:"fitting",relative:base+add*fpRate},
+    {lens:"中近・室内用",part:"近用部分",key:"near",relative:base+add}
   ];
 }
 
 function getEyeData(eye){
   const fullSE=sphericalEquivalent(getValue(`fullS_${eye}`),getValue(`fullC_${eye}`));
   const rxSE=sphericalEquivalent(getValue(`rxS_${eye}`),getValue(`rxC_${eye}`));
-
-  return {
-    eye,
-    fullSE,
-    rxSE,
-    baseRelative:rxSE-fullSE
-  };
+  return{eye,fullSE,rxSE,baseRelative:rxSE-fullSE};
 }
 
 function toggleMode(){
   const mode=document.getElementById("inputMode").value;
-  const selectedEye=document.getElementById("selectedEye").value;
-
-  const eyeSelectArea=document.getElementById("eyeSelectArea");
-  const rightBlock=document.getElementById("rightEyeBlock");
-  const leftBlock=document.getElementById("leftEyeBlock");
-
-  if(mode==="singleEye"){
-    eyeSelectArea.style.display="block";
-    rightBlock.style.display=selectedEye==="R"?"block":"none";
-    leftBlock.style.display=selectedEye==="L"?"block":"none";
-  }else{
-    eyeSelectArea.style.display="none";
-    rightBlock.style.display="block";
-    leftBlock.style.display="block";
-  }
+  const selected=document.getElementById("selectedEye").value;
+  document.getElementById("eyeSelectArea").style.display=mode==="singleEye"?"block":"none";
+  document.getElementById("rightEyeBlock").style.display=mode==="bothEyes"||selected==="R"?"block":"none";
+  document.getElementById("leftEyeBlock").style.display=mode==="bothEyes"||selected==="L"?"block":"none";
 }
 
-function enrichZonesWithRange(zones,accommodation){
-  return zones.map(zone=>{
-    const range=calculateRange(zone.relative,accommodation);
-    const farText=formatDistance(range.far);
-    const nearText=formatDistance(range.near);
-
-    return {
-      ...zone,
-      range,
-      farText,
-      nearText,
-      rangeText:range.message ? "明視域なし" : `${farText}〜${nearText}`
-    };
+function enrichZones(zones,acc){
+  return zones.map(z=>{
+    const r=calculateRange(z.relative,acc);
+    return{...z,range:r,farText:formatDistance(r.far),nearText:formatDistance(r.near),rangeText:formatRange(r.far,r.near,r.message)};
   });
 }
 
 function drawLensDiagram(lensType,zones){
-  const find=key=>zones.find(zone=>zone.key===key);
+  const find=k=>zones.find(z=>z.key===k);
+  const s=find("single"),d=find("distance"),f=find("fitting"),n=find("near");
+  const outline=`<path d="M48 126 C72 72,216 66,246 118 C276 170,238 238,186 254 C140 268,75 251,49 211 C31 181,34 149,48 126 Z" fill="#fff" stroke="#2563eb" stroke-width="4"/>`;
 
-  const single=find("single");
-  const distance=find("distance");
-  const fp=find("fp");
-  const near=find("near");
-
-  const bostonOutline=`
-    <path
-      d="
-        M50 120
-        C70 70, 210 65, 240 115
-        C270 165, 235 235, 185 250
-        C140 263, 75 248, 50 210
-        C32 180, 35 145, 50 120 Z
-      "
-      fill="#ffffff"
-      stroke="#2563eb"
-      stroke-width="3"
-    />
-  `;
-
-  if(lensType==="single"){
-    return `
-      <div class="diagram-wrap">
-        <svg viewBox="0 0 520 360">
-          ${bostonOutline}
-          <ellipse cx="145" cy="165" rx="95" ry="62" fill="#dbeafe" />
-          <text x="145" y="156" text-anchor="middle" class="zone-text">単焦点</text>
-          <text x="145" y="182" text-anchor="middle" class="zone-text">${single.rangeText}</text>
-          <text x="300" y="145" class="side-text">処方度数</text>
-          <text x="300" y="174" class="side-small">${single.rangeText}</text>
-        </svg>
+  if(lensType==="single")return`
+  <div class="diagram-wrap"><svg viewBox="0 0 560 350">
+    ${outline}
+    <ellipse cx="145" cy="170" rx="102" ry="70" fill="#dbeafe"/>
+    <text x="145" y="164" text-anchor="middle" class="zone-text">単焦点</text>
+    <text x="145" y="195" text-anchor="middle" class="zone-small">${s.rangeText}</text>
+    <foreignObject x="315" y="125" width="220" height="110">
+      <div xmlns="http://www.w3.org/1999/xhtml" class="side-item">
+        <div class="side-title">処方度数</div>
+        <div class="side-value">${s.rangeText}</div>
       </div>
-    `;
-  }
+    </foreignObject>
+  </svg></div>`;
 
-  if(lensType==="progressive"){
-    return `
-      <div class="diagram-wrap">
-        <svg viewBox="0 0 520 360">
-          ${bostonOutline}
-          <ellipse cx="145" cy="118" rx="82" ry="30" fill="#dbeafe" />
-          <path d="M120 150 C132 138,158 138,170 150 C166 175,158 198,154 215 C150 230,140 230,136 215 C132 198,124 175,120 150 Z" fill="#bfdbfe"/>
-          <ellipse cx="145" cy="225" rx="48" ry="25" fill="#93c5fd" />
-
-          <text x="145" y="112" text-anchor="middle" class="zone-text">遠用</text>
-          <text x="145" y="137" text-anchor="middle" class="zone-text">${distance.rangeText}</text>
-
-          <text x="145" y="219" text-anchor="middle" class="zone-text">近用</text>
-          <text x="145" y="246" text-anchor="middle" class="zone-text">${near.rangeText}</text>
-
-          <text x="300" y="103" class="side-text">遠用部分</text>
-          <text x="300" y="132" class="side-small">${distance.rangeText}</text>
-
-          <text x="300" y="213" class="side-text">近用部分</text>
-          <text x="300" y="242" class="side-small">${near.rangeText}</text>
-        </svg>
+  if(lensType==="progressive")return`
+  <div class="diagram-wrap"><svg viewBox="0 0 560 350">
+    ${outline}
+    <ellipse cx="145" cy="122" rx="88" ry="34" fill="#dbeafe"/>
+    <ellipse cx="145" cy="230" rx="52" ry="28" fill="#93c5fd"/>
+    <text x="145" y="116" text-anchor="middle" class="zone-text">遠用</text>
+    <text x="145" y="145" text-anchor="middle" class="zone-small">${d.rangeText}</text>
+    <text x="145" y="224" text-anchor="middle" class="zone-text">近用</text>
+    <text x="145" y="253" text-anchor="middle" class="zone-small">${n.rangeText}</text>
+    <foreignObject x="315" y="85" width="220" height="170">
+      <div xmlns="http://www.w3.org/1999/xhtml" class="side-box">
+        <div class="side-item"><div class="side-title">遠用部分</div><div class="side-value">${d.rangeText}</div></div>
+        <div class="side-item"><div class="side-title">近用部分</div><div class="side-value">${n.rangeText}</div></div>
       </div>
-    `;
-  }
+    </foreignObject>
+  </svg></div>`;
 
-  return `
-    <div class="diagram-wrap">
-      <svg viewBox="0 0 520 360">
-        ${bostonOutline}
-        <ellipse cx="145" cy="105" rx="78" ry="28" fill="#dbeafe" />
-        <ellipse cx="145" cy="165" rx="64" ry="30" fill="#bfdbfe" />
-        <ellipse cx="145" cy="225" rx="48" ry="25" fill="#93c5fd" />
+  return`
+  <div class="diagram-wrap"><svg viewBox="0 0 560 350">
+    ${outline}
+    <ellipse cx="145" cy="108" rx="82" ry="30" fill="#dbeafe"/>
+    <ellipse cx="145" cy="170" rx="68" ry="31" fill="#bfdbfe"/>
+    <ellipse cx="145" cy="230" rx="52" ry="28" fill="#93c5fd"/>
+    <text x="145" y="101" text-anchor="middle" class="zone-text">遠用</text>
+    <text x="145" y="128" text-anchor="middle" class="zone-small">${d.rangeText}</text>
+    <text x="145" y="164" text-anchor="middle" class="zone-text">フィッティング</text>
+    <text x="145" y="192" text-anchor="middle" class="zone-small">${f.rangeText}</text>
+    <text x="145" y="224" text-anchor="middle" class="zone-text">近用</text>
+    <text x="145" y="253" text-anchor="middle" class="zone-small">${n.rangeText}</text>
+    <foreignObject x="315" y="70" width="230" height="220">
+      <div xmlns="http://www.w3.org/1999/xhtml" class="side-box">
+        <div class="side-item"><div class="side-title">遠用部分</div><div class="side-value">${d.rangeText}</div></div>
+        <div class="side-item"><div class="side-title">フィッティングポイント</div><div class="side-value">${f.rangeText}</div></div>
+        <div class="side-item"><div class="side-title">近用部分</div><div class="side-value">${n.rangeText}</div></div>
+      </div>
+    </foreignObject>
+  </svg></div>`;
+}
 
-        <text x="145" y="99" text-anchor="middle" class="zone-text">遠用</text>
-        <text x="145" y="124" text-anchor="middle" class="zone-text">${distance.rangeText}</text>
-
-        <text x="145" y="159" text-anchor="middle" class="zone-text">FP</text>
-        <text x="145" y="186" text-anchor="middle" class="zone-text">${fp.rangeText}</text>
-
-        <text x="145" y="219" text-anchor="middle" class="zone-text">近用</text>
-        <text x="145" y="246" text-anchor="middle" class="zone-text">${near.rangeText}</text>
-
-        <text x="300" y="90" class="side-text">遠用部分</text>
-        <text x="300" y="119" class="side-small">${distance.rangeText}</text>
-
-        <text x="300" y="153" class="side-text">FP</text>
-        <text x="300" y="182" class="side-small">${fp.rangeText}</text>
-
-        <text x="300" y="213" class="side-text">近用部分</text>
-        <text x="300" y="242" class="side-small">${near.rangeText}</text>
-      </svg>
-    </div>
+function conditionRows(lensType,eyeData,acc,add,fpRate){
+  const addRelevant=lensType!=="single";
+  const fpRelevant=lensType==="indoor";
+  return`
+    <div class="summary-row"><span>完全矯正値 SE</span><strong>${formatPower(eyeData.fullSE)}</strong></div>
+    <div class="summary-row"><span>処方値 SE</span><strong>${formatPower(eyeData.rxSE)}</strong></div>
+    <div class="summary-row"><span>処方差</span><strong>${formatPower(eyeData.baseRelative)}</strong></div>
+    <div class="summary-row"><span>調節力計算</span><strong>${getBaseAccommodationLabel()}</strong></div>
+    <div class="summary-row"><span>使用調節力</span><strong>${formatPower(acc)}（${getUseRateLabel()}）</strong></div>
+    <div class="summary-row ${addRelevant?"":"muted"}"><span>加入度 ADD</span><strong>${addRelevant?formatPower(add):"—"}</strong></div>
+    <div class="summary-row ${fpRelevant?"":"muted"}"><span>フィッティングポイント加入変化率</span><strong>${fpRelevant?Math.round(fpRate*100)+"%":"—"}</strong></div>
   `;
 }
 
-function makeEyeResult(eyeData,lensType,accommodation,addPower,fpRate){
-  const zones=getZones(lensType,eyeData.baseRelative,addPower,fpRate);
-  const enrichedZones=enrichZonesWithRange(zones,accommodation);
-  const diagramHtml=drawLensDiagram(lensType,enrichedZones);
-
+function makeEyeResult(eyeData,lensType,acc,add,fpRate){
+  const zones=enrichZones(getZones(lensType,eyeData.baseRelative,add,fpRate),acc);
   let html=`
-    <div class="eye-title">${eyeData.eye==="R"?"右眼 R":"左眼 L"}</div>
-    ${diagramHtml}
-    <div class="summary-box">
-      完全矯正値 SE：<strong>${formatPower(eyeData.fullSE)}</strong><br>
-      処方値 SE：<strong>${formatPower(eyeData.rxSE)}</strong><br>
-      処方差：<strong>${formatPower(eyeData.baseRelative)}</strong><br>
-      調節力計算：<strong>${getBaseAccommodationLabel()}</strong><br>
-      使用調節力：<strong>${formatPower(accommodation)}</strong><br>
-      加入度：<strong>${formatPower(addPower)}</strong><br>
-      FP加入変化率：<strong>${Math.round(fpRate*100)}%</strong>
-    </div>
-    <div class="table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>レンズ種別</th>
-            <th>部分</th>
-            <th>完全矯正との差</th>
-            <th>遠点</th>
-            <th>近点</th>
-            <th>明視域</th>
-          </tr>
-        </thead>
-        <tbody>
-  `;
-
-  enrichedZones.forEach(zone=>{
-    html+=`
-      <tr>
-        <td>${zone.lens}</td>
-        <td><span class="badge">${zone.part}</span></td>
-        <td>${formatPower(zone.relative)}</td>
-        <td>${zone.farText}</td>
-        <td>${zone.nearText}</td>
-        <td>${zone.range.message ? `<span class="warning">${zone.range.message}</span>` : zone.rangeText}</td>
-      </tr>
-    `;
+    <div class="eye-result">
+      <div class="eye-title">👁 ${eyeData.eye==="R"?"右眼 R":"左眼 L"}</div>
+      <div class="result-flex">
+        ${drawLensDiagram(lensType,zones)}
+        <div class="summary-box">${conditionRows(lensType,eyeData,acc,add,fpRate)}</div>
+      </div>
+      <div class="table-wrap"><table><thead><tr>
+        <th>レンズ種別</th><th>部分</th><th>完全矯正との差</th><th>遠点</th><th>近点</th><th>明視域</th>
+      </tr></thead><tbody>`;
+  zones.forEach(z=>{
+    html+=`<tr><td>${z.lens}</td><td><span class="badge">${z.part}</span></td><td>${formatPower(z.relative)}</td><td>${z.farText}</td><td>${z.nearText}</td><td class="big-result">${z.range.message?`<span class="warning">${z.range.message}</span>`:z.rangeText}</td></tr>`;
   });
-
-  html+=`
-        </tbody>
-      </table>
-    </div>
-  `;
-
+  html+=`</tbody></table></div></div>`;
   return html;
 }
 
 function calculate(){
   toggleMode();
-
+  updateDisabledStates();
   const mode=document.getElementById("inputMode").value;
   const lensType=document.getElementById("lensType").value;
-  const selectedEye=document.getElementById("selectedEye").value;
-
-  const accommodation=getAccommodation();
-  const addPower=getValue("addPower");
+  const selected=document.getElementById("selectedEye").value;
+  const acc=getAccommodation();
+  const add=getValue("addPower");
   const fpRate=getValue("fpRate")/100;
-
-  const eyes=mode==="singleEye" ? [selectedEye] : ["R","L"];
-
-  let html="";
-
-  eyes.forEach(eye=>{
-    const eyeData=getEyeData(eye);
-    html+=makeEyeResult(eyeData,lensType,accommodation,addPower,fpRate);
-  });
-
-  document.getElementById("result").innerHTML=html;
+  const eyes=mode==="singleEye"?[selected]:["R","L"];
+  document.getElementById("result").innerHTML=eyes.map(e=>makeEyeResult(getEyeData(e),lensType,acc,add,fpRate)).join("");
 }
 
 setupEvents();
 toggleMode();
+updateDisabledStates();
 calculate();
 </script>
-
 </body>
 </html>
