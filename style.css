@@ -25,7 +25,12 @@ body{
 .app{
   max-width:1120px;
   margin:0 auto;
-  padding:24px 16px 280px;
+  padding:24px 16px 48px;
+  transition:padding-bottom .2s ease;
+}
+
+body.keypad-open .app{
+  padding-bottom:320px;
 }
 
 .header{
@@ -191,7 +196,6 @@ select:disabled{
   box-shadow:0 0 0 3px #dbeafe;
 }
 
-/* ラジオボタン */
 .radio-row{
   display:flex;
   gap:18px;
@@ -420,21 +424,38 @@ th{
   margin:10px 0 0;
 }
 
+/* テンキー：Android Chrome対策版 */
 .keypad{
   position:fixed;
   left:0;
   right:0;
-  bottom:-330px;
+  bottom:0;
   background:#fff;
   border-top:1px solid #cbd5e1;
   box-shadow:0 -8px 24px rgba(15,23,42,.18);
-  padding:12px;
-  transition:.2s;
+  padding:12px 12px calc(12px + env(safe-area-inset-bottom));
   z-index:9999;
+
+  transform:translateY(110%);
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+
+  transition:
+    transform .22s ease,
+    opacity .18s ease,
+    visibility 0s linear .22s;
 }
 
 .keypad.show{
-  bottom:0;
+  transform:translateY(0);
+  opacity:1;
+  visibility:visible;
+  pointer-events:auto;
+  transition:
+    transform .22s ease,
+    opacity .18s ease,
+    visibility 0s;
 }
 
 .keypad-title{
@@ -494,7 +515,11 @@ th{
 
 @media(max-width:720px){
   .app{
-    padding:18px 12px 280px;
+    padding:18px 12px 48px;
+  }
+
+  body.keypad-open .app{
+    padding-bottom:320px;
   }
 
   .header{
