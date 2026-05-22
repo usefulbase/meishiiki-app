@@ -29,6 +29,7 @@
   <div class="panel-grid">
     <section class="panel">
       <h2>👥 入力モード</h2>
+
       <label>入力方法
         <select id="inputMode">
           <option value="singleEye">片眼入力</option>
@@ -48,6 +49,7 @@
 
     <section class="panel">
       <h2>👓 レンズ種別</h2>
+
       <label>レンズタイプ
         <select id="lensType">
           <option value="single">単焦点</option>
@@ -61,8 +63,15 @@
       <h2>🎯 調節力</h2>
 
       <div class="radio-row">
-        <label><input type="radio" name="accMode" value="measured" checked>実測値を使う</label>
-        <label><input type="radio" name="accMode" value="age">年齢から計算する</label>
+        <label class="radio-option">
+          <input type="radio" name="accMode" value="measured" checked>
+          <span>実測値を使う</span>
+        </label>
+
+        <label class="radio-option">
+          <input type="radio" name="accMode" value="age">
+          <span>年齢から計算する</span>
+        </label>
       </div>
 
       <div class="grid">
@@ -92,7 +101,9 @@
         </label>
       </div>
 
-      <p class="note">Hofstetter最小値：15 − 0.25×年齢。石原式目安は年齢別目安から線形補間。</p>
+      <p class="note">
+        Hofstetter最小値：15 − 0.25×年齢。石原式目安は年齢別目安から線形補間。
+      </p>
     </section>
 
     <section class="panel">
@@ -165,7 +176,9 @@
   <section class="result-area">
     <h2>📊 計算結果</h2>
     <div id="result"></div>
-    <p class="footer-note">※ ∞は無限遠を表します。明視域は理論値であり、実際の見え方を保証するものではありません。</p>
+    <p class="footer-note">
+      ※ ∞は無限遠を表します。明視域は理論値であり、実際の見え方を保証するものではありません。
+    </p>
   </section>
 </div>
 
