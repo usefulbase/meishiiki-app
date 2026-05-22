@@ -60,7 +60,10 @@ function openKeypad(input) {
 
   input.classList.add("active");
 
-  document.getElementById("keypad").classList.add("show");
+  const keypad = document.getElementById("keypad");
+  keypad.classList.add("show");
+  document.body.classList.add("keypad-open");
+
   document.getElementById("keypadTitle").textContent =
     input.closest("label").innerText.trim();
 
@@ -68,7 +71,10 @@ function openKeypad(input) {
 }
 
 function closeKeypad() {
-  document.getElementById("keypad").classList.remove("show");
+  const keypad = document.getElementById("keypad");
+
+  keypad.classList.remove("show");
+  document.body.classList.remove("keypad-open");
 
   if (activeInput) {
     activeInput.classList.remove("active");
@@ -140,6 +146,7 @@ function stepValue(step) {
   activeInput.value = next.toFixed(2);
 
   updateKeypadDisplay();
+  handleFpPreset();
   calculate(false);
 }
 
@@ -213,6 +220,10 @@ function setDisabled(id, disabled, labelId) {
 
   if (label) {
     label.classList.toggle("is-disabled", disabled);
+  }
+
+  if (disabled && activeInput === el) {
+    closeKeypad();
   }
 }
 
