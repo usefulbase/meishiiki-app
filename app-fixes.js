@@ -8,6 +8,13 @@
     return /^処方案[A-C]$/.test(name || "");
   }
 
+  function applyIndoorFpDefault(pattern){
+    if (!pattern) return;
+    if (pattern.fpPreset === "custom" && (pattern.fpRate === "50" || pattern.fpRate === "" || pattern.fpRate == null)) {
+      pattern.fpRate = "40";
+    }
+  }
+
   function ensurePatternOrderNames(){
     if (!Array.isArray(prescriptionPatterns)) return;
     for (let i = 0; i < 3; i++) {
@@ -15,6 +22,7 @@
       if (!prescriptionPatterns[i].name || isDefaultPatternName(prescriptionPatterns[i].name)) {
         prescriptionPatterns[i].name = fixedPatternName(i);
       }
+      applyIndoorFpDefault(prescriptionPatterns[i]);
     }
   }
 
@@ -81,6 +89,11 @@
       toggleMode();
       updateDisabledStates();
       saveActivePattern();
+      ensurePatternOrderNames();
+      const active = prescriptionPatterns[activePatternIndex];
+      if (active && getTextValue("fpPreset") === "custom" && getTextValue("fpRate") === "50") {
+        document.getElementById("fpRate").value = active.fpRate || "40";
+      }
       const mode = getTextValue("inputMode");
       const lensType = getTextValue("lensType");
       const selected = getTextValue("selectedEye");
@@ -129,7 +142,10 @@
   };
 
   ensurePatternOrderNames();
+  const fp = document.getElementById("fpRate");
+  if (fp && fp.value === "50") fp.value = "40";
+  saveActivePattern();
   updatePatternTabs();
   calculate(false);
 })();
-// version: app-fixes-v3
+// version: app-fixes-v4
