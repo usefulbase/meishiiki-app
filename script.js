@@ -30,7 +30,6 @@ function setupEvents() {
       updateDisabledStates();
       calculate(false);
     });
-
     el.addEventListener("change", () => {
       handleFpPreset();
       saveActivePattern();
@@ -38,7 +37,6 @@ function setupEvents() {
       calculate(false);
     });
   });
-
   document.querySelectorAll(".num-input").forEach(input => {
     input.addEventListener("click", () => {
       if (!input.disabled) openKeypad(input);
@@ -98,43 +96,10 @@ function pressKey(key) {
   saveActivePattern();
   calculate(false);
 }
-
-function backspaceKey() {
-  if (!activeInput) return;
-  activeInput.value = activeInput.value.slice(0, -1);
-  updateKeypadDisplay();
-  handleFpPreset();
-  saveActivePattern();
-  calculate(false);
-}
-
-function clearKey() {
-  if (!activeInput) return;
-  activeInput.value = "";
-  updateKeypadDisplay();
-  handleFpPreset();
-  saveActivePattern();
-  calculate(false);
-}
-
-function toggleSign() {
-  if (!activeInput) return;
-  activeInput.value = activeInput.value.startsWith("-") ? activeInput.value.slice(1) : "-" + activeInput.value;
-  updateKeypadDisplay();
-  saveActivePattern();
-  calculate(false);
-}
-
-function stepValue(step) {
-  if (!activeInput) return;
-  const current = Number(activeInput.value) || 0;
-  const next = Math.round((current + step) * 100) / 100;
-  activeInput.value = next.toFixed(2);
-  updateKeypadDisplay();
-  handleFpPreset();
-  saveActivePattern();
-  calculate(false);
-}
+function backspaceKey() { if (!activeInput) return; activeInput.value = activeInput.value.slice(0, -1); updateKeypadDisplay(); handleFpPreset(); saveActivePattern(); calculate(false); }
+function clearKey() { if (!activeInput) return; activeInput.value = ""; updateKeypadDisplay(); handleFpPreset(); saveActivePattern(); calculate(false); }
+function toggleSign() { if (!activeInput) return; activeInput.value = activeInput.value.startsWith("-") ? activeInput.value.slice(1) : "-" + activeInput.value; updateKeypadDisplay(); saveActivePattern(); calculate(false); }
+function stepValue(step) { if (!activeInput) return; const current = Number(activeInput.value) || 0; const next = Math.round((current + step) * 100) / 100; activeInput.value = next.toFixed(2); updateKeypadDisplay(); handleFpPreset(); saveActivePattern(); calculate(false); }
 
 function getValue(id) { return Number(document.getElementById(id).value); }
 function getTextValue(id) { return document.getElementById(id).value; }
@@ -150,7 +115,6 @@ function formatDistance(meter) {
   if (cm >= 100) return meter.toFixed(2) + "m";
   return Math.round(cm) + "cm";
 }
-
 function formatRange(far, near, message) {
   if (message) return "明視域なし";
   const farText = formatDistance(far);
@@ -163,7 +127,6 @@ function handleFpPreset() {
   const fpRate = document.getElementById("fpRate");
   if (preset.value !== "custom") fpRate.value = preset.value;
 }
-
 function saveActivePattern() {
   if (isLoadingPattern) return;
   prescriptionPatterns[activePatternIndex] = {
@@ -179,7 +142,6 @@ function saveActivePattern() {
   };
   updatePatternTabs();
 }
-
 function loadPattern(index) {
   const p = prescriptionPatterns[index];
   isLoadingPattern = true;
@@ -194,7 +156,6 @@ function loadPattern(index) {
   document.getElementById("rxC_L").value = p.rxC_L;
   isLoadingPattern = false;
 }
-
 function switchPattern(index) {
   if (index >= activePatternCount || index === activePatternIndex) return;
   saveActivePattern();
@@ -204,7 +165,6 @@ function switchPattern(index) {
   updateDisabledStates();
   calculate(false);
 }
-
 function addPattern() {
   saveActivePattern();
   if (activePatternCount >= 3) return;
@@ -215,7 +175,6 @@ function addPattern() {
   updateDisabledStates();
   calculate(false);
 }
-
 function removeActivePattern() {
   if (activePatternCount <= 1) return;
   prescriptionPatterns.splice(activePatternIndex, 1);
@@ -227,7 +186,6 @@ function removeActivePattern() {
   updateDisabledStates();
   calculate(false);
 }
-
 function updatePatternTabs() {
   for (let i = 0; i < 3; i++) {
     const btn = document.getElementById(`patternTab${i}`);
@@ -254,7 +212,6 @@ function updateDisabledStates() {
   setDisabled("fpPreset", lensType !== "indoor", "fpPresetLabel");
   setDisabled("fpRate", lensType !== "indoor", "fpRateLabel");
 }
-
 function setDisabled(id, disabled, labelId) {
   const el = document.getElementById(id);
   const label = document.getElementById(labelId);
@@ -277,21 +234,18 @@ function getIshiharaAccommodation(age) {
   }
   return 0;
 }
-
 function getAgeAccommodation() {
   const age = getValue("age");
   const formula = document.getElementById("ageFormula").value;
   if (formula === "hofstetterMin") return Math.max(0, 15 - 0.25 * age);
   return Math.max(0, getIshiharaAccommodation(age));
 }
-
 function getAccommodation() {
   const mode = document.querySelector('input[name="accMode"]:checked').value;
   const base = mode === "measured" ? getValue("measuredAcc") : getAgeAccommodation();
   const useRate = getValue("accUseRate") || 1;
   return Math.round(Math.max(0, base * useRate) * 4) / 4;
 }
-
 function getBaseAccommodationLabel() {
   const mode = document.querySelector('input[name="accMode"]:checked').value;
   if (mode === "measured") return `実測値 ${formatPower(getValue("measuredAcc"))}`;
@@ -300,14 +254,12 @@ function getBaseAccommodationLabel() {
   const label = formula === "hofstetterMin" ? "Hofstetter最小値" : "石原式目安";
   return `${label} ${formatPower(base)}`;
 }
-
 function getUseRateLabel() {
   const value = document.getElementById("accUseRate").value;
   if (value === "1") return "100%";
   if (value === "0.6667") return "2/3";
   return "1/2";
 }
-
 function getLensLabel(lensType) {
   if (lensType === "single") return "単焦点";
   if (lensType === "progressive") return "遠近両用";
@@ -326,7 +278,6 @@ function calculateRange(relativePower, accommodation) {
   else near = null;
   return { far, near, message:"" };
 }
-
 function getZones(lensType, baseRelative, addPower, fpRate) {
   if (lensType === "single") return [{ lens:"単焦点", part:"処方度数", key:"single", relative:baseRelative }];
   if (lensType === "progressive") return [
@@ -339,7 +290,6 @@ function getZones(lensType, baseRelative, addPower, fpRate) {
     { lens:"中近・室内用", part:"近用部分", key:"near", relative:baseRelative + addPower }
   ];
 }
-
 function getEyeData(eye, pattern = null) {
   const rxS = pattern ? Number(pattern[`rxS_${eye}`]) : getValue(`rxS_${eye}`);
   const rxC = pattern ? Number(pattern[`rxC_${eye}`]) : getValue(`rxC_${eye}`);
@@ -347,7 +297,6 @@ function getEyeData(eye, pattern = null) {
   const rxSE = sphericalEquivalent(rxS, rxC);
   return { eye, fullSE, rxSE, baseRelative:rxSE - fullSE, rxS, rxC };
 }
-
 function toggleMode() {
   const mode = document.getElementById("inputMode").value;
   const selected = document.getElementById("selectedEye").value;
@@ -355,7 +304,6 @@ function toggleMode() {
   document.getElementById("rightEyeBlock").style.display = mode === "bothEyes" || selected === "R" ? "block" : "none";
   document.getElementById("leftEyeBlock").style.display = mode === "bothEyes" || selected === "L" ? "block" : "none";
 }
-
 function enrichZones(zones, accommodation) {
   return zones.map(zone => {
     const range = calculateRange(zone.relative, accommodation);
@@ -369,30 +317,20 @@ function drawLensDiagram(lensType, zones, compact = false) {
   const distance = find("distance");
   const fitting = find("fitting");
   const near = find("near");
-  const outline = `
-    <g transform="translate(0,0)">
-      <path d="M48 126 C84 66,145 48,197 63 C245 77,275 116,276 170 C276 224,245 252,197 267 C145 282,84 264,48 214 C30 184,30 151,48 126 Z" fill="#fff" stroke="#2563eb" stroke-width="4"/>
-    </g>
-    <path d="M276 166 C292 156,308 156,324 166" fill="none" stroke="#2563eb" stroke-width="4" stroke-linecap="round"/>
-    <g transform="translate(600,0) scale(-1,1)">
-      <path d="M48 126 C84 66,145 48,197 63 C245 77,275 116,276 170 C276 224,245 252,197 267 C145 282,84 264,48 214 C30 184,30 151,48 126 Z" fill="#fff" stroke="#2563eb" stroke-width="4"/>
-    </g>`;
-  const viewBox = compact ? "0 0 600 340" : "0 0 920 350";
-  const leftX = 145;
-  const rightX = 455;
-  const labelX = compact ? 300 : 300;
-  const sideX = 650;
+  const viewBox = compact ? "0 0 360 250" : "0 0 560 350";
+  const sideX = 315;
+  const outline = `<path d="M42 120 C72 78,122 58,182 67 C232 75,270 112,282 162 C294 212,258 248,198 260 C140 272,76 252,48 212 C28 184,25 145,42 120 Z" fill="#fff" stroke="#2563eb" stroke-width="4" stroke-linejoin="round"/>`;
   const sideSingle = compact ? "" : `<foreignObject x="${sideX}" y="125" width="220" height="110"><div xmlns="http://www.w3.org/1999/xhtml" class="side-item"><div class="side-title">処方度数</div><div class="side-value">${single.rangeText}</div></div></foreignObject>`;
   const sideProgressive = compact ? "" : `<foreignObject x="${sideX}" y="92" width="220" height="170"><div xmlns="http://www.w3.org/1999/xhtml" class="side-box"><div class="side-item"><div class="side-title">遠用部分</div><div class="side-value">${distance.rangeText}</div></div><div class="side-item"><div class="side-title">近用部分</div><div class="side-value">${near.rangeText}</div></div></div></foreignObject>`;
   const sideIndoor = compact ? "" : `<foreignObject x="${sideX}" y="70" width="230" height="220"><div xmlns="http://www.w3.org/1999/xhtml" class="side-box"><div class="side-item"><div class="side-title">遠用部分</div><div class="side-value">${distance.rangeText}</div></div><div class="side-item"><div class="side-title">フィッティングポイント</div><div class="side-value">${fitting.rangeText}</div></div><div class="side-item"><div class="side-title">近用部分</div><div class="side-value">${near.rangeText}</div></div></div></foreignObject>`;
-
+  const cx = 160;
   if (lensType === "single") {
-    return `<div class="diagram-wrap"><svg viewBox="${viewBox}">${outline}<ellipse cx="${leftX}" cy="170" rx="102" ry="70" fill="#dbeafe"/><ellipse cx="${rightX}" cy="170" rx="102" ry="70" fill="#dbeafe"/><text x="${labelX}" y="164" text-anchor="middle" class="zone-text">単焦点</text><text x="${labelX}" y="195" text-anchor="middle" class="zone-small">${single.rangeText}</text>${sideSingle}</svg></div>`;
+    return `<div class="diagram-wrap"><svg viewBox="${viewBox}">${outline}<ellipse cx="${cx}" cy="164" rx="106" ry="66" fill="#dbeafe"/><text x="${cx}" y="158" text-anchor="middle" class="zone-text">単焦点</text><text x="${cx}" y="190" text-anchor="middle" class="zone-small">${single.rangeText}</text>${sideSingle}</svg></div>`;
   }
   if (lensType === "progressive") {
-    return `<div class="diagram-wrap"><svg viewBox="${viewBox}">${outline}<ellipse cx="${leftX}" cy="138" rx="94" ry="38" fill="#dbeafe"/><ellipse cx="${rightX}" cy="138" rx="94" ry="38" fill="#dbeafe"/><ellipse cx="${leftX}" cy="208" rx="66" ry="34" fill="#93c5fd"/><ellipse cx="${rightX}" cy="208" rx="66" ry="34" fill="#93c5fd"/><text x="${labelX}" y="132" text-anchor="middle" class="zone-text">遠用</text><text x="${labelX}" y="160" text-anchor="middle" class="zone-small">${distance.rangeText}</text><text x="${labelX}" y="202" text-anchor="middle" class="zone-text">近用</text><text x="${labelX}" y="230" text-anchor="middle" class="zone-small">${near.rangeText}</text>${sideProgressive}</svg></div>`;
+    return `<div class="diagram-wrap"><svg viewBox="${viewBox}">${outline}<ellipse cx="${cx}" cy="132" rx="96" ry="35" fill="#dbeafe"/><ellipse cx="${cx}" cy="206" rx="70" ry="34" fill="#93c5fd"/><text x="${cx}" y="126" text-anchor="middle" class="zone-text">遠用</text><text x="${cx}" y="154" text-anchor="middle" class="zone-small">${distance.rangeText}</text><text x="${cx}" y="200" text-anchor="middle" class="zone-text">近用</text><text x="${cx}" y="228" text-anchor="middle" class="zone-small">${near.rangeText}</text>${sideProgressive}</svg></div>`;
   }
-  return `<div class="diagram-wrap"><svg viewBox="${viewBox}">${outline}<ellipse cx="${leftX}" cy="118" rx="84" ry="30" fill="#dbeafe"/><ellipse cx="${rightX}" cy="118" rx="84" ry="30" fill="#dbeafe"/><ellipse cx="${leftX}" cy="170" rx="72" ry="30" fill="#bfdbfe"/><ellipse cx="${rightX}" cy="170" rx="72" ry="30" fill="#bfdbfe"/><ellipse cx="${leftX}" cy="220" rx="60" ry="30" fill="#93c5fd"/><ellipse cx="${rightX}" cy="220" rx="60" ry="30" fill="#93c5fd"/><text x="${labelX}" y="111" text-anchor="middle" class="zone-text">遠用</text><text x="${labelX}" y="136" text-anchor="middle" class="zone-small">${distance.rangeText}</text><text x="${labelX}" y="164" text-anchor="middle" class="zone-text">FP</text><text x="${labelX}" y="190" text-anchor="middle" class="zone-small">${fitting.rangeText}</text><text x="${labelX}" y="214" text-anchor="middle" class="zone-text">近用</text><text x="${labelX}" y="240" text-anchor="middle" class="zone-small">${near.rangeText}</text>${sideIndoor}</svg></div>`;
+  return `<div class="diagram-wrap"><svg viewBox="${viewBox}">${outline}<ellipse cx="${cx}" cy="116" rx="88" ry="29" fill="#dbeafe"/><ellipse cx="${cx}" cy="166" rx="76" ry="29" fill="#bfdbfe"/><ellipse cx="${cx}" cy="216" rx="64" ry="29" fill="#93c5fd"/><text x="${cx}" y="110" text-anchor="middle" class="zone-text">遠用</text><text x="${cx}" y="135" text-anchor="middle" class="zone-small">${distance.rangeText}</text><text x="${cx}" y="160" text-anchor="middle" class="zone-text">FP</text><text x="${cx}" y="185" text-anchor="middle" class="zone-small">${fitting.rangeText}</text><text x="${cx}" y="210" text-anchor="middle" class="zone-text">近用</text><text x="${cx}" y="235" text-anchor="middle" class="zone-small">${near.rangeText}</text>${sideIndoor}</svg></div>`;
 }
 
 function conditionRows(lensType, eyeData, accommodation, addPower, fpRate) {
@@ -448,7 +386,6 @@ function buildPrintPage(pattern, index) {
   const ageMode = document.querySelector('input[name="accMode"]:checked').value === "age";
   return `<section class="print-page"><h1 class="print-title">メガネの見え方の目安</h1><div class="print-subtitle">${pattern.name || `処方案${String.fromCharCode(65 + index)}`}</div><div class="print-info"><div class="print-info-item">レンズタイプ<strong>${getLensLabel(lensType)}</strong></div><div class="print-info-item">加入度 ADD<strong>${addText}</strong></div><div class="print-info-item">使用調節力<strong>${formatPower(accommodation)}（${getUseRateLabel()}）</strong></div><div class="print-info-item">調節力計算<strong>${getBaseAccommodationLabel()}</strong></div><div class="print-info-item">FP加入変化率<strong>${fpText}</strong></div></div><div class="print-eyes">${eyeHtml}</div><div class="print-notes"><div>※∞は無限遠を表します。</div><div>※明視域は計算上の目安です。実際の見え方には、眼の状態・レンズ設計・フレーム調整・慣れなどが影響します。</div>${ageMode ? "<div>※調節力は年齢から算出した目安値を使用しています。実際の調節力には個人差があります。</div>" : ""}</div></section>`;
 }
-
 function printCustomerPdf() {
   saveActivePattern();
   const printArea = document.getElementById("printArea");
