@@ -115,4 +115,4 @@
   updatePatternTabs();
   calculate(false);
 })();
-// version: app-fixes-v1
+// version: app-fixes-v2
