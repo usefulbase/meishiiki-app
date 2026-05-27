@@ -7,127 +7,23 @@
 <link rel="icon" href="icon.png">
 <link rel="apple-touch-icon" href="icon.png">
 <link rel="manifest" href="manifest.json">
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css?v=9">
 </head>
 <body>
 <div class="app">
-  <div class="header">
-    <div class="title-wrap">
-      <h1><span class="icon">👁</span>メガネ明視域計算アプリ</h1>
-      <p>完全矯正値・処方値・加入度・調節力から明視域を計算します</p>
-    </div>
-    <div class="action-area">
-      <button id="calcBtn" class="main-btn" type="button" onclick="manualCalculate()">↻ 再計算</button>
-      <button class="sub-btn" type="button" onclick="printCustomerPdf()">PDF保存</button>
-      <div id="updateStatus" class="update-status">入力すると自動更新</div>
-    </div>
-  </div>
+  <div class="header"><div class="title-wrap"><h1><span class="icon">👁</span>メガネ明視域計算アプリ</h1><p>完全矯正値・処方値・加入度・調節力から明視域を計算します</p></div><div class="action-area"><button id="calcBtn" class="main-btn" type="button" onclick="manualCalculate()">↻ 再計算</button><button class="sub-btn" type="button" onclick="printCustomerPdf()">PDF保存</button><div id="updateStatus" class="update-status">入力すると自動更新</div></div></div>
   <div class="panel-grid">
-    <section class="panel">
-      <h2>👥 入力モード</h2>
-      <label>入力方法
-        <select id="inputMode">
-          <option value="singleEye">片眼入力</option>
-          <option value="bothEyes">左右同時入力</option>
-        </select>
-      </label>
-      <div id="eyeSelectArea">
-        <label>計算する眼
-          <select id="selectedEye">
-            <option value="R">右眼 R</option>
-            <option value="L">左眼 L</option>
-          </select>
-        </label>
-      </div>
-    </section>
-    <section class="panel pattern-panel">
-      <h2>📝 処方案</h2>
-      <div class="pattern-tabs">
-        <button type="button" class="pattern-tab active" id="patternTab0" onclick="switchPattern(0)">処方案A</button>
-        <button type="button" class="pattern-tab hidden" id="patternTab1" onclick="switchPattern(1)">処方案B</button>
-        <button type="button" class="pattern-tab hidden" id="patternTab2" onclick="switchPattern(2)">処方案C</button>
-      </div>
-      <div class="pattern-actions">
-        <button type="button" class="small-btn" id="addPatternBtn" onclick="addPattern()">＋ 処方案を追加</button>
-        <button type="button" class="small-btn danger" id="removePatternBtn" onclick="removeActivePattern()">この案を使わない</button>
-      </div>
-      <label>処方案名
-        <input id="patternName" type="text" value="処方案A">
-      </label>
-    </section>
-    <section class="panel">
-      <h2>👓 レンズ種別</h2>
-      <label>レンズタイプ
-        <select id="lensType">
-          <option value="single">単焦点</option>
-          <option value="progressive">遠近両用</option>
-          <option value="indoor">中近・室内用</option>
-        </select>
-      </label>
-    </section>
-    <section class="panel">
-      <h2>🎯 調節力</h2>
-      <div class="radio-row">
-        <label class="radio-option"><input type="radio" name="accMode" value="measured" checked><span>実測値を使う</span></label>
-        <label class="radio-option"><input type="radio" name="accMode" value="age"><span>年齢から計算する</span></label>
-      </div>
-      <div class="grid">
-        <label id="measuredLabel">実測調節力 D<input class="num-input" id="measuredAcc" type="text" value="2.50" readonly></label>
-        <label id="ageLabel">年齢<input class="num-input" id="age" type="text" value="45" readonly></label>
-      </div>
-      <div class="grid">
-        <label id="ageFormulaLabel">年齢計算方式
-          <select id="ageFormula"><option value="ishihara">石原式目安</option><option value="hofstetterMin">Hofstetter最小値</option></select>
-        </label>
-        <label>使用する調節力
-          <select id="accUseRate"><option value="1">すべて使う</option><option value="0.6667">2/3使う</option><option value="0.5">1/2使う</option></select>
-        </label>
-      </div>
-      <p class="note">Hofstetter最小値：15 − 0.25×年齢。石原式目安は年齢別目安から線形補間。</p>
-    </section>
-    <section class="panel">
-      <h2>➕ 加入度・中間部設定</h2>
-      <label id="addLabel">加入度 ADD<input class="num-input" id="addPower" type="text" value="2.00" readonly></label>
-      <label id="fpPresetLabel">フィッティングポイント加入変化率プリセット
-        <select id="fpPreset"><option value="custom">任意入力</option><option value="25">中近（遠方重視）25%</option><option value="40">中近（近方重視）40%</option></select>
-      </label>
-      <label id="fpRateLabel">フィッティングポイントでの加入変化率 %<input class="num-input" id="fpRate" type="text" value="50" readonly></label>
-    </section>
+    <section class="panel"><h2>👥 入力モード</h2><label>入力方法<select id="inputMode"><option value="singleEye">片眼入力</option><option value="bothEyes">左右同時入力</option></select></label><div id="eyeSelectArea"><label>計算する眼<select id="selectedEye"><option value="R">右眼 R</option><option value="L">左眼 L</option></select></label></div></section>
+    <section class="panel pattern-panel"><h2>📝 処方案</h2><div class="pattern-tabs"><button type="button" class="pattern-tab active" id="patternTab0" onclick="switchPattern(0)">処方案A</button><button type="button" class="pattern-tab hidden" id="patternTab1" onclick="switchPattern(1)">処方案B</button><button type="button" class="pattern-tab hidden" id="patternTab2" onclick="switchPattern(2)">処方案C</button></div><div class="pattern-actions"><button type="button" class="small-btn" id="addPatternBtn" onclick="addPattern()">＋ 処方案を追加</button><button type="button" class="small-btn danger" id="removePatternBtn" onclick="removeActivePattern()">この案を使わない</button></div><label>処方案名<input id="patternName" type="text" value="処方案A"></label></section>
+    <section class="panel"><h2>👓 レンズ種別</h2><label>レンズタイプ<select id="lensType"><option value="single">単焦点</option><option value="progressive">遠近両用</option><option value="indoor">中近・室内用</option></select></label></section>
+    <section class="panel"><h2>🎯 調節力</h2><div class="radio-row"><label class="radio-option"><input type="radio" name="accMode" value="measured" checked><span>実測値を使う</span></label><label class="radio-option"><input type="radio" name="accMode" value="age"><span>年齢から計算する</span></label></div><div class="grid"><label id="measuredLabel">実測調節力 D<input class="num-input" id="measuredAcc" type="text" value="2.50" readonly></label><label id="ageLabel">年齢<input class="num-input" id="age" type="text" value="45" readonly></label></div><div class="grid"><label id="ageFormulaLabel">年齢計算方式<select id="ageFormula"><option value="ishihara">石原式目安</option><option value="hofstetterMin">Hofstetter最小値</option></select></label><label>使用する調節力<select id="accUseRate"><option value="1">すべて使う</option><option value="0.6667">2/3使う</option><option value="0.5">1/2使う</option></select></label></div><p class="note">Hofstetter最小値：15 − 0.25×年齢。石原式目安は年齢別目安から線形補間。</p></section>
+    <section class="panel"><h2>➕ 加入度・中間部設定</h2><label id="addLabel">加入度 ADD<input class="num-input" id="addPower" type="text" value="2.00" readonly></label><label id="fpPresetLabel">フィッティングポイント加入変化率プリセット<select id="fpPreset"><option value="custom">任意入力</option><option value="25">中近（遠方重視）25%</option><option value="40">中近（近方重視）40%</option></select></label><label id="fpRateLabel">フィッティングポイントでの加入変化率 %<input class="num-input" id="fpRate" type="text" value="50" readonly></label></section>
   </div>
-  <div class="eye-grid">
-    <section class="eye-panel eye-block" id="rightEyeBlock">
-      <h2>👁 右眼 R</h2>
-      <div class="eye-inner-grid">
-        <div class="eye-card"><h3><span>完全矯正値</span><em>7A</em></h3><div class="field-row"><label>S<input class="num-input" id="fullS_R" type="text" value="-3.00" readonly></label><label>C<input class="num-input" id="fullC_R" type="text" value="0.00" readonly></label></div></div>
-        <div class="eye-card"><h3>処方値</h3><div class="field-row"><label>S<input class="num-input" id="rxS_R" type="text" value="-3.00" readonly></label><label>C<input class="num-input" id="rxC_R" type="text" value="0.00" readonly></label></div></div>
-      </div>
-    </section>
-    <section class="eye-panel eye-block" id="leftEyeBlock">
-      <h2>👁 左眼 L</h2>
-      <div class="eye-inner-grid">
-        <div class="eye-card"><h3><span>完全矯正値</span><em>7A</em></h3><div class="field-row"><label>S<input class="num-input" id="fullS_L" type="text" value="-3.00" readonly></label><label>C<input class="num-input" id="fullC_L" type="text" value="0.00" readonly></label></div></div>
-        <div class="eye-card"><h3>処方値</h3><div class="field-row"><label>S<input class="num-input" id="rxS_L" type="text" value="-3.00" readonly></label><label>C<input class="num-input" id="rxC_L" type="text" value="0.00" readonly></label></div></div>
-      </div>
-    </section>
-  </div>
-  <section class="result-area">
-    <div class="result-head"><h2>📊 計算結果</h2><span id="activePatternLabel" class="active-pattern-label">処方案A</span></div>
-    <div id="result"></div>
-    <p class="footer-note">※ ∞は無限遠を表します。明視域は理論値であり、実際の見え方を保証するものではありません。</p>
-  </section>
+  <div class="eye-grid"><section class="eye-panel eye-block" id="rightEyeBlock"><h2>👁 右眼 R</h2><div class="eye-inner-grid"><div class="eye-card"><h3><span>完全矯正値</span><em>7A</em></h3><div class="field-row"><label>S<input class="num-input" id="fullS_R" type="text" value="-3.00" readonly></label><label>C<input class="num-input" id="fullC_R" type="text" value="0.00" readonly></label></div></div><div class="eye-card"><h3>処方値</h3><div class="field-row"><label>S<input class="num-input" id="rxS_R" type="text" value="-3.00" readonly></label><label>C<input class="num-input" id="rxC_R" type="text" value="0.00" readonly></label></div></div></div></section><section class="eye-panel eye-block" id="leftEyeBlock"><h2>👁 左眼 L</h2><div class="eye-inner-grid"><div class="eye-card"><h3><span>完全矯正値</span><em>7A</em></h3><div class="field-row"><label>S<input class="num-input" id="fullS_L" type="text" value="-3.00" readonly></label><label>C<input class="num-input" id="fullC_L" type="text" value="0.00" readonly></label></div></div><div class="eye-card"><h3>処方値</h3><div class="field-row"><label>S<input class="num-input" id="rxS_L" type="text" value="-3.00" readonly></label><label>C<input class="num-input" id="rxC_L" type="text" value="0.00" readonly></label></div></div></div></section></div>
+  <section class="result-area"><div class="result-head"><h2>📊 計算結果</h2><span id="activePatternLabel" class="active-pattern-label">処方案A</span></div><div id="result"></div><p class="footer-note">※ ∞は無限遠を表します。明視域は理論値であり、実際の見え方を保証するものではありません。</p></section>
 </div>
 <div id="printArea" class="print-area"></div>
-<div id="keypad" class="keypad">
-  <div class="keypad-title" id="keypadTitle">数値入力</div>
-  <div class="keypad-display" id="keypadDisplay"></div>
-  <div class="keypad-grid">
-    <button type="button" onclick="pressKey('7')">7</button><button type="button" onclick="pressKey('8')">8</button><button type="button" onclick="pressKey('9')">9</button><button type="button" onclick="backspaceKey()">⌫</button>
-    <button type="button" onclick="pressKey('4')">4</button><button type="button" onclick="pressKey('5')">5</button><button type="button" onclick="pressKey('6')">6</button><button type="button" onclick="clearKey()">C</button>
-    <button type="button" onclick="pressKey('1')">1</button><button type="button" onclick="pressKey('2')">2</button><button type="button" onclick="pressKey('3')">3</button><button type="button" onclick="toggleSign()">±</button>
-    <button type="button" onclick="pressKey('0')">0</button><button type="button" onclick="pressKey('.')">.</button><button type="button" onclick="stepValue(-0.25)">-0.25</button><button type="button" onclick="stepValue(0.25)">+0.25</button>
-  </div>
-  <button class="done-btn" type="button" onclick="closeKeypad()">決定</button>
-</div>
-<script src="script.js?v=7"></script>
+<div id="keypad" class="keypad"><div class="keypad-title" id="keypadTitle">数値入力</div><div class="keypad-display" id="keypadDisplay"></div><div class="keypad-grid"><button type="button" onclick="pressKey('7')">7</button><button type="button" onclick="pressKey('8')">8</button><button type="button" onclick="pressKey('9')">9</button><button type="button" onclick="backspaceKey()">⌫</button><button type="button" onclick="pressKey('4')">4</button><button type="button" onclick="pressKey('5')">5</button><button type="button" onclick="pressKey('6')">6</button><button type="button" onclick="clearKey()">C</button><button type="button" onclick="pressKey('1')">1</button><button type="button" onclick="pressKey('2')">2</button><button type="button" onclick="pressKey('3')">3</button><button type="button" onclick="toggleSign()">±</button><button type="button" onclick="pressKey('0')">0</button><button type="button" onclick="pressKey('.')">.</button><button type="button" onclick="stepValue(-0.25)">-0.25</button><button type="button" onclick="stepValue(0.25)">+0.25</button></div><button class="done-btn" type="button" onclick="closeKeypad()">決定</button></div>
+<script src="script.js?v=9"></script>
 </body>
 </html>
