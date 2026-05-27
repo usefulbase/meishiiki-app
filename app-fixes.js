@@ -4,29 +4,36 @@
     return `処方案${String.fromCharCode(65 + index)}`;
   }
 
-  function normalizePatternOrder(){
+  function isDefaultPatternName(name){
+    return /^処方案[A-C]$/.test(name || "");
+  }
+
+  function ensurePatternOrderNames(){
     if (!Array.isArray(prescriptionPatterns)) return;
     for (let i = 0; i < 3; i++) {
       if (!prescriptionPatterns[i]) prescriptionPatterns[i] = defaultPattern(i);
-      prescriptionPatterns[i].name = fixedPatternName(i);
-    }
-    const input = document.getElementById("patternName");
-    if (input && prescriptionPatterns[activePatternIndex]) {
-      input.value = prescriptionPatterns[activePatternIndex].name;
+      if (!prescriptionPatterns[i].name || isDefaultPatternName(prescriptionPatterns[i].name)) {
+        prescriptionPatterns[i].name = fixedPatternName(i);
+      }
     }
   }
 
+  function displayPatternName(index){
+    const p = prescriptionPatterns[index];
+    return p && p.name ? p.name : fixedPatternName(index);
+  }
+
   window.updatePatternTabs = updatePatternTabs = function(){
-    normalizePatternOrder();
+    ensurePatternOrderNames();
     for (let i = 0; i < 3; i++) {
       const btn = document.getElementById(`patternTab${i}`);
       if (!btn) continue;
-      btn.textContent = fixedPatternName(i);
+      btn.textContent = displayPatternName(i);
       btn.classList.toggle("active", i === activePatternIndex);
       btn.classList.toggle("hidden", i >= activePatternCount);
     }
     const label = document.getElementById("activePatternLabel");
-    if (label) label.textContent = fixedPatternName(activePatternIndex);
+    if (label) label.textContent = displayPatternName(activePatternIndex);
     const addBtn = document.getElementById("addPatternBtn");
     const removeBtn = document.getElementById("removePatternBtn");
     if (addBtn) addBtn.disabled = activePatternCount >= 3;
@@ -37,7 +44,7 @@
     saveActivePattern();
     if (activePatternCount >= 3) return;
     activePatternCount++;
-    normalizePatternOrder();
+    ensurePatternOrderNames();
     activePatternIndex = activePatternCount - 1;
     loadPattern(activePatternIndex);
     updatePatternTabs();
@@ -52,11 +59,21 @@
     prescriptionPatterns.push(defaultPattern(2));
     activePatternCount--;
     activePatternIndex = Math.min(activePatternIndex, activePatternCount - 1);
-    normalizePatternOrder();
+    ensurePatternOrderNames();
     loadPattern(activePatternIndex);
     updatePatternTabs();
     updateDisabledStates();
     calculate(false);
+  };
+
+  window.makeEyeResult = makeEyeResult = function(eyeData, lensType, accommodation, addPower, fpRate){
+    const zones = enrichZones(getZones(lensType, eyeData.baseRelative, addPower, fpRate), accommodation);
+    let html = `<div class="eye-result"><div class="eye-title">👁 ${eyeData.eye === "R" ? "右眼 R" : "左眼 L"}</div><div class="result-flex">${drawLensDiagram(lensType, zones)}</div>${rangeCards(zones)}<div class="summary-box">${conditionRows(lensType, eyeData, accommodation, addPower, fpRate)}</div><div class="table-wrap"><table><thead><tr><th>レンズ種別</th><th>部分</th><th>完全矯正との差</th><th>遠点</th><th>近点</th><th>明視域</th></tr></thead><tbody>`;
+    zones.forEach(zone => {
+      html += `<tr><td>${zone.lens}</td><td><span class="badge">${zone.part}</span></td><td>${formatPower(zone.relative)}</td><td>${zone.farText}</td><td>${zone.nearText}</td><td class="big-result">${zone.range.message ? `<span class="warning">${zone.range.message}</span>` : zone.rangeText}</td></tr>`;
+    });
+    html += `</tbody></table></div></div>`;
+    return html;
   };
 
   window.calculate = calculate = function(manual = false){
@@ -98,7 +115,7 @@
     const fpText = lensType === "indoor" ? Math.round(fpRate * 100) + "%" : "—";
     const ageMode = pattern.accMode === "age";
     const oneEyeClass = eyesToPrint.length === 1 ? " single-print-eye" : "";
-    return `<section class="print-page"><h1 class="print-title">メガネの見え方の目安</h1><div class="print-subtitle">${fixedPatternName(index)}</div><div class="print-info"><div class="print-info-item">レンズタイプ<strong>${getLensLabel(lensType)}</strong></div><div class="print-info-item">加入度 ADD<strong>${addText}</strong></div><div class="print-info-item">使用調節力<strong>${formatPower(accommodation)}（${getPatternUseRateLabel(pattern)}）</strong></div><div class="print-info-item">調節力計算<strong>${getPatternBaseAccommodationLabel(pattern)}</strong></div><div class="print-info-item">FP加入変化率<strong>${fpText}</strong></div></div><div class="print-eyes${oneEyeClass}">${eyeHtml}</div><div class="print-notes"><div>※∞は無限遠を表します。</div><div>※明視域は計算上の目安です。実際の見え方には、眼の状態・レンズ設計・フレーム調整・慣れなどが影響します。</div>${ageMode ? "<div>※調節力は年齢から算出した目安値を使用しています。実際の調節力には個人差があります。</div>" : ""}</div></section>`;
+    return `<section class="print-page"><h1 class="print-title">メガネの見え方の目安</h1><div class="print-subtitle">${displayPatternName(index)}</div><div class="print-info"><div class="print-info-item">レンズタイプ<strong>${getLensLabel(lensType)}</strong></div><div class="print-info-item">加入度 ADD<strong>${addText}</strong></div><div class="print-info-item">使用調節力<strong>${formatPower(accommodation)}（${getPatternUseRateLabel(pattern)}）</strong></div><div class="print-info-item">調節力計算<strong>${getPatternBaseAccommodationLabel(pattern)}</strong></div><div class="print-info-item">FP加入変化率<strong>${fpText}</strong></div></div><div class="print-eyes${oneEyeClass}">${eyeHtml}</div><div class="print-notes"><div>※∞は無限遠を表します。</div><div>※明視域は計算上の目安です。実際の見え方には、眼の状態・レンズ設計・フレーム調整・慣れなどが影響します。</div>${ageMode ? "<div>※調節力は年齢から算出した目安値を使用しています。実際の調節力には個人差があります。</div>" : ""}</div></section>`;
   }
 
   window.printCustomerPdf = printCustomerPdf = function(){
@@ -111,8 +128,8 @@
     window.print();
   };
 
-  normalizePatternOrder();
+  ensurePatternOrderNames();
   updatePatternTabs();
   calculate(false);
 })();
-// version: app-fixes-v2
+// version: app-fixes-v3
