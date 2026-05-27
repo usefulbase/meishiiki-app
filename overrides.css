@@ -33,6 +33,13 @@
   max-width:120mm;
   margin:0 auto;
 }
+/* 中近は表示段数が多いため、イラスト内文字を少しだけ小さくする */
+.compact-diagram-results .eye-result:has(text:nth-of-type(5)) .zone-text{
+  font-size:28px;
+}
+.compact-diagram-results .eye-result:has(text:nth-of-type(5)) .zone-small{
+  font-size:25px;
+}
 @media(max-width:720px){
   .result-flex .diagram-wrap svg{
     max-width:100%;
@@ -49,6 +56,12 @@
   .compact-diagram-results .zone-small{
     font-size:31px;
   }
+  .compact-diagram-results .eye-result:has(text:nth-of-type(5)) .zone-text{
+    font-size:29px;
+  }
+  .compact-diagram-results .eye-result:has(text:nth-of-type(5)) .zone-small{
+    font-size:26px;
+  }
   .compact-diagram-results .eye-result{
     padding:6px;
   }
@@ -56,4 +69,4 @@
     padding:1px;
   }
 }
-/* version: overrides-v4 */
+/* version: overrides-v5 */
