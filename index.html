@@ -43,8 +43,10 @@
     </section>
     <section class="panel pattern-panel">
       <h2>📝 処方案</h2>
-      <div class="pattern-tabs" id="patternTabs">
-        <button type="button" class="pattern-tab active" data-pattern="0" onclick="switchPattern(0)">処方案A</button>
+      <div class="pattern-tabs">
+        <button type="button" class="pattern-tab active" id="patternTab0" onclick="switchPattern(0)">処方案A</button>
+        <button type="button" class="pattern-tab hidden" id="patternTab1" onclick="switchPattern(1)">処方案B</button>
+        <button type="button" class="pattern-tab hidden" id="patternTab2" onclick="switchPattern(2)">処方案C</button>
       </div>
       <div class="pattern-actions">
         <button type="button" class="small-btn" id="addPatternBtn" onclick="addPattern()">＋ 処方案を追加</button>
