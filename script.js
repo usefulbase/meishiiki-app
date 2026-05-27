@@ -13,7 +13,12 @@ const defaultPattern = index => ({
   rxS_R: "-3.00",
   rxC_R: "0.00",
   rxS_L: "-3.00",
-  rxC_L: "0.00"
+  rxC_L: "0.00",
+  accMode: "measured",
+  measuredAcc: "2.50",
+  age: "45",
+  ageFormula: "ishihara",
+  accUseRate: "1"
 });
 
 let prescriptionPatterns = [defaultPattern(0), defaultPattern(1), defaultPattern(2)];
@@ -26,6 +31,16 @@ function getValue(id) {
 function getTextValue(id) {
   const el = document.getElementById(id);
   return el ? el.value : "";
+}
+
+function getAccModeValue() {
+  const checked = document.querySelector('input[name="accMode"]:checked');
+  return checked ? checked.value : "measured";
+}
+
+function setAccModeValue(value) {
+  const target = document.querySelector(`input[name="accMode"][value="${value}"]`);
+  if (target) target.checked = true;
 }
 
 function sphericalEquivalent(s, c) {
@@ -61,9 +76,7 @@ function formatRange(far, near, message) {
 function setupEvents() {
   document.querySelectorAll("input, select").forEach(el => {
     el.addEventListener("input", () => {
-      if (el.id === "patternName") {
-        prescriptionPatterns[activePatternIndex].name = el.value || defaultPattern(activePatternIndex).name;
-      }
+      if (el.id === "patternName") prescriptionPatterns[activePatternIndex].name = el.value || defaultPattern(activePatternIndex).name;
       handleFpPreset();
       saveActivePattern();
       updateDisabledStates();
@@ -76,7 +89,6 @@ function setupEvents() {
       calculate(false);
     });
   });
-
   document.querySelectorAll(".num-input").forEach(input => {
     input.addEventListener("click", () => {
       if (!input.disabled) openKeypad(input);
@@ -189,7 +201,12 @@ function saveActivePattern() {
     rxS_R: getTextValue("rxS_R"),
     rxC_R: getTextValue("rxC_R"),
     rxS_L: getTextValue("rxS_L"),
-    rxC_L: getTextValue("rxC_L")
+    rxC_L: getTextValue("rxC_L"),
+    accMode: getAccModeValue(),
+    measuredAcc: getTextValue("measuredAcc"),
+    age: getTextValue("age"),
+    ageFormula: getTextValue("ageFormula"),
+    accUseRate: getTextValue("accUseRate")
   };
   updatePatternTabs();
 }
@@ -206,6 +223,11 @@ function loadPattern(index) {
   document.getElementById("rxC_R").value = p.rxC_R;
   document.getElementById("rxS_L").value = p.rxS_L;
   document.getElementById("rxC_L").value = p.rxC_L;
+  setAccModeValue(p.accMode || "measured");
+  document.getElementById("measuredAcc").value = p.measuredAcc || "2.50";
+  document.getElementById("age").value = p.age || "45";
+  document.getElementById("ageFormula").value = p.ageFormula || "ishihara";
+  document.getElementById("accUseRate").value = p.accUseRate || "1";
   isLoadingPattern = false;
 }
 
@@ -259,8 +281,7 @@ function updatePatternTabs() {
 }
 
 function updateDisabledStates() {
-  const checked = document.querySelector('input[name="accMode"]:checked');
-  const accMode = checked ? checked.value : "measured";
+  const accMode = getAccModeValue();
   const lensType = getTextValue("lensType");
   setDisabled("measuredAcc", accMode !== "measured", "measuredLabel");
   setDisabled("age", accMode !== "age", "ageLabel");
@@ -301,16 +322,14 @@ function getAgeAccommodation() {
 }
 
 function getAccommodation() {
-  const checked = document.querySelector('input[name="accMode"]:checked');
-  const mode = checked ? checked.value : "measured";
+  const mode = getAccModeValue();
   const base = mode === "measured" ? getValue("measuredAcc") : getAgeAccommodation();
   const useRate = getValue("accUseRate") || 1;
   return Math.round(Math.max(0, base * useRate) * 4) / 4;
 }
 
 function getBaseAccommodationLabel() {
-  const checked = document.querySelector('input[name="accMode"]:checked');
-  const mode = checked ? checked.value : "measured";
+  const mode = getAccModeValue();
   if (mode === "measured") return `実測値 ${formatPower(getValue("measuredAcc"))}`;
   const label = getTextValue("ageFormula") === "hofstetterMin" ? "Hofstetter最小値" : "石原式目安";
   return `${label} ${formatPower(Math.round(getAgeAccommodation() * 4) / 4)}`;
@@ -385,16 +404,16 @@ function drawLensDiagram(lensType, zones, compact = false) {
   const near = zones.find(z => z.key === "near");
   const viewBox = compact ? "0 0 360 230" : "0 0 360 230";
   const cx = 180;
-  const outline = `<ellipse cx="${cx}" cy="115" rx="150" ry="82" fill="#fff" stroke="#2563eb" stroke-width="4"/>`;
+  const outline = `<ellipse cx="${cx}" cy="115" rx="154" ry="84" fill="#fff" stroke="#2563eb" stroke-width="4"/>`;
 
   if (lensType === "single" && single) {
-    return `<div class="diagram-wrap"><svg viewBox="${viewBox}">${outline}<ellipse cx="${cx}" cy="115" rx="126" ry="60" fill="#dbeafe"/><text x="${cx}" y="110" text-anchor="middle" class="zone-text">単焦点</text><text x="${cx}" y="142" text-anchor="middle" class="zone-small">${single.rangeText}</text></svg></div>`;
+    return `<div class="diagram-wrap"><svg viewBox="${viewBox}">${outline}<ellipse cx="${cx}" cy="115" rx="130" ry="64" fill="#dbeafe"/><text x="${cx}" y="108" text-anchor="middle" class="zone-text">単焦点</text><text x="${cx}" y="145" text-anchor="middle" class="zone-small">${single.rangeText}</text></svg></div>`;
   }
   if (lensType === "progressive" && distance && near) {
-    return `<div class="diagram-wrap"><svg viewBox="${viewBox}">${outline}<ellipse cx="${cx}" cy="82" rx="124" ry="36" fill="#dbeafe"/><ellipse cx="${cx}" cy="154" rx="88" ry="36" fill="#93c5fd"/><text x="${cx}" y="78" text-anchor="middle" class="zone-text">遠用</text><text x="${cx}" y="106" text-anchor="middle" class="zone-small">${distance.rangeText}</text><text x="${cx}" y="150" text-anchor="middle" class="zone-text">近用</text><text x="${cx}" y="178" text-anchor="middle" class="zone-small">${near.rangeText}</text></svg></div>`;
+    return `<div class="diagram-wrap"><svg viewBox="${viewBox}">${outline}<ellipse cx="${cx}" cy="76" rx="128" ry="38" fill="#dbeafe"/><ellipse cx="${cx}" cy="158" rx="94" ry="38" fill="#93c5fd"/><text x="${cx}" y="70" text-anchor="middle" class="zone-text">遠用</text><text x="${cx}" y="102" text-anchor="middle" class="zone-small">${distance.rangeText}</text><text x="${cx}" y="152" text-anchor="middle" class="zone-text">近用</text><text x="${cx}" y="184" text-anchor="middle" class="zone-small">${near.rangeText}</text></svg></div>`;
   }
   if (lensType === "indoor" && distance && fitting && near) {
-    return `<div class="diagram-wrap"><svg viewBox="${viewBox}">${outline}<ellipse cx="${cx}" cy="70" rx="116" ry="30" fill="#dbeafe"/><ellipse cx="${cx}" cy="115" rx="102" ry="30" fill="#bfdbfe"/><ellipse cx="${cx}" cy="160" rx="82" ry="30" fill="#93c5fd"/><text x="${cx}" y="66" text-anchor="middle" class="zone-text">遠用</text><text x="${cx}" y="90" text-anchor="middle" class="zone-small">${distance.rangeText}</text><text x="${cx}" y="111" text-anchor="middle" class="zone-text">FP</text><text x="${cx}" y="135" text-anchor="middle" class="zone-small">${fitting.rangeText}</text><text x="${cx}" y="156" text-anchor="middle" class="zone-text">近用</text><text x="${cx}" y="180" text-anchor="middle" class="zone-small">${near.rangeText}</text></svg></div>`;
+    return `<div class="diagram-wrap"><svg viewBox="${viewBox}">${outline}<ellipse cx="${cx}" cy="62" rx="118" ry="31" fill="#dbeafe"/><ellipse cx="${cx}" cy="115" rx="106" ry="31" fill="#bfdbfe"/><ellipse cx="${cx}" cy="168" rx="88" ry="31" fill="#93c5fd"/><text x="${cx}" y="57" text-anchor="middle" class="zone-text">遠用</text><text x="${cx}" y="82" text-anchor="middle" class="zone-small">${distance.rangeText}</text><text x="${cx}" y="110" text-anchor="middle" class="zone-text">FP</text><text x="${cx}" y="135" text-anchor="middle" class="zone-small">${fitting.rangeText}</text><text x="${cx}" y="163" text-anchor="middle" class="zone-text">近用</text><text x="${cx}" y="188" text-anchor="middle" class="zone-small">${near.rangeText}</text></svg></div>`;
   }
   return `<div class="diagram-wrap"><svg viewBox="${viewBox}">${outline}<text x="${cx}" y="120" text-anchor="middle" class="zone-text">表示なし</text></svg></div>`;
 }
@@ -445,7 +464,10 @@ function calculate(manual = false) {
 
 function buildPrintPage(pattern, index) {
   const lensType = pattern.lensType;
-  const accommodation = getAccommodation();
+  const current = prescriptionPatterns[activePatternIndex];
+  saveActivePattern();
+  const backup = prescriptionPatterns[activePatternIndex];
+  const accommodation = getPatternAccommodation(pattern);
   const addPower = Number(pattern.addPower) || 0;
   const fpRate = (Number(pattern.fpRate) || 0) / 100;
   const eyeHtml = ["R", "L"].map(eye => {
@@ -456,9 +478,32 @@ function buildPrintPage(pattern, index) {
   }).join("");
   const addText = lensType === "single" ? "—" : formatPower(addPower);
   const fpText = lensType === "indoor" ? Math.round(fpRate * 100) + "%" : "—";
-  const checked = document.querySelector('input[name="accMode"]:checked');
-  const ageMode = checked && checked.value === "age";
-  return `<section class="print-page"><h1 class="print-title">メガネの見え方の目安</h1><div class="print-subtitle">${pattern.name || `処方案${String.fromCharCode(65 + index)}`}</div><div class="print-info"><div class="print-info-item">レンズタイプ<strong>${getLensLabel(lensType)}</strong></div><div class="print-info-item">加入度 ADD<strong>${addText}</strong></div><div class="print-info-item">使用調節力<strong>${formatPower(accommodation)}（${getUseRateLabel()}）</strong></div><div class="print-info-item">調節力計算<strong>${getBaseAccommodationLabel()}</strong></div><div class="print-info-item">FP加入変化率<strong>${fpText}</strong></div></div><div class="print-eyes">${eyeHtml}</div><div class="print-notes"><div>※∞は無限遠を表します。</div><div>※明視域は計算上の目安です。実際の見え方には、眼の状態・レンズ設計・フレーム調整・慣れなどが影響します。</div>${ageMode ? "<div>※調節力は年齢から算出した目安値を使用しています。実際の調節力には個人差があります。</div>" : ""}</div></section>`;
+  const ageMode = pattern.accMode === "age";
+  return `<section class="print-page"><h1 class="print-title">メガネの見え方の目安</h1><div class="print-subtitle">${pattern.name || `処方案${String.fromCharCode(65 + index)}`}</div><div class="print-info"><div class="print-info-item">レンズタイプ<strong>${getLensLabel(lensType)}</strong></div><div class="print-info-item">加入度 ADD<strong>${addText}</strong></div><div class="print-info-item">使用調節力<strong>${formatPower(accommodation)}（${getPatternUseRateLabel(pattern)}）</strong></div><div class="print-info-item">調節力計算<strong>${getPatternBaseAccommodationLabel(pattern)}</strong></div><div class="print-info-item">FP加入変化率<strong>${fpText}</strong></div></div><div class="print-eyes">${eyeHtml}</div><div class="print-notes"><div>※∞は無限遠を表します。</div><div>※明視域は計算上の目安です。実際の見え方には、眼の状態・レンズ設計・フレーム調整・慣れなどが影響します。</div>${ageMode ? "<div>※調節力は年齢から算出した目安値を使用しています。実際の調節力には個人差があります。</div>" : ""}</div></section>`;
+}
+
+function getPatternAgeAccommodation(pattern) {
+  const age = Number(pattern.age) || 0;
+  if (pattern.ageFormula === "hofstetterMin") return Math.max(0, 15 - 0.25 * age);
+  return Math.max(0, getIshiharaAccommodation(age));
+}
+
+function getPatternAccommodation(pattern) {
+  const base = pattern.accMode === "age" ? getPatternAgeAccommodation(pattern) : Number(pattern.measuredAcc || 0);
+  const useRate = Number(pattern.accUseRate || 1);
+  return Math.round(Math.max(0, base * useRate) * 4) / 4;
+}
+
+function getPatternBaseAccommodationLabel(pattern) {
+  if (pattern.accMode !== "age") return `実測値 ${formatPower(Number(pattern.measuredAcc || 0))}`;
+  const label = pattern.ageFormula === "hofstetterMin" ? "Hofstetter最小値" : "石原式目安";
+  return `${label} ${formatPower(Math.round(getPatternAgeAccommodation(pattern) * 4) / 4)}`;
+}
+
+function getPatternUseRateLabel(pattern) {
+  if (pattern.accUseRate === "1") return "100%";
+  if (pattern.accUseRate === "0.6667") return "2/3";
+  return "1/2";
 }
 
 function printCustomerPdf() {
@@ -475,4 +520,4 @@ toggleMode();
 updateDisabledStates();
 calculate(false);
 
-// version: v11
+// version: v13
