@@ -1,6 +1,7 @@
 let activeInput = null;
 let statusTimer = null;
 let activePatternIndex = 0;
+let activePatternCount = 1;
 let isLoadingPattern = false;
 
 const defaultPattern = index => ({
@@ -212,6 +213,7 @@ function loadPattern(index) {
 }
 
 function switchPattern(index) {
+  if (index >= activePatternCount) return;
   if (index === activePatternIndex) return;
   saveActivePattern();
   activePatternIndex = index;
@@ -221,14 +223,49 @@ function switchPattern(index) {
   calculate(false);
 }
 
+function addPattern() {
+  saveActivePattern();
+  if (activePatternCount >= 3) return;
+  activePatternCount += 1;
+  activePatternIndex = activePatternCount - 1;
+  loadPattern(activePatternIndex);
+  updatePatternTabs();
+  updateDisabledStates();
+  calculate(false);
+}
+
+function removeActivePattern() {
+  if (activePatternCount <= 1) return;
+  prescriptionPatterns.splice(activePatternIndex, 1);
+  prescriptionPatterns.push(defaultPattern(2));
+  activePatternCount -= 1;
+  activePatternIndex = Math.max(0, activePatternIndex - 1);
+  loadPattern(activePatternIndex);
+  updatePatternTabs();
+  updateDisabledStates();
+  calculate(false);
+}
+
 function updatePatternTabs() {
-  document.querySelectorAll(".pattern-tab").forEach((btn, index) => {
-    const name = prescriptionPatterns[index].name || defaultPattern(index).name;
-    btn.textContent = name;
-    btn.classList.toggle("active", index === activePatternIndex);
-  });
+  const tabs = document.getElementById("patternTabs");
+  if (tabs) {
+    tabs.innerHTML = "";
+    for (let i = 0; i < activePatternCount; i++) {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "pattern-tab" + (i === activePatternIndex ? " active" : "");
+      btn.dataset.pattern = String(i);
+      btn.textContent = prescriptionPatterns[i].name || defaultPattern(i).name;
+      btn.onclick = () => switchPattern(i);
+      tabs.appendChild(btn);
+    }
+  }
   const label = document.getElementById("activePatternLabel");
   if (label) label.textContent = prescriptionPatterns[activePatternIndex].name || defaultPattern(activePatternIndex).name;
+  const addBtn = document.getElementById("addPatternBtn");
+  const removeBtn = document.getElementById("removePatternBtn");
+  if (addBtn) addBtn.disabled = activePatternCount >= 3;
+  if (removeBtn) removeBtn.disabled = activePatternCount <= 1;
 }
 
 function updateDisabledStates() {
@@ -357,15 +394,22 @@ function drawLensDiagram(lensType, zones, compact = false) {
   const distance = find("distance");
   const fitting = find("fitting");
   const near = find("near");
-  const outline = `<path d="M48 126 C84 66,145 48,197 63 C245 77,275 116,276 170 C276 224,245 252,197 267 C145 282,84 264,48 214 C30 184,30 151,48 126 Z" fill="#fff" stroke="#2563eb" stroke-width="4"/>`;
-  const sideSingle = compact ? "" : `<foreignObject x="315" y="125" width="220" height="110"><div xmlns="http://www.w3.org/1999/xhtml" class="side-item"><div class="side-title">処方度数</div><div class="side-value">${single.rangeText}</div></div></foreignObject>`;
-  const sideProgressive = compact ? "" : `<foreignObject x="315" y="92" width="220" height="170"><div xmlns="http://www.w3.org/1999/xhtml" class="side-box"><div class="side-item"><div class="side-title">遠用部分</div><div class="side-value">${distance.rangeText}</div></div><div class="side-item"><div class="side-title">近用部分</div><div class="side-value">${near.rangeText}</div></div></div></foreignObject>`;
-  const sideIndoor = compact ? "" : `<foreignObject x="315" y="70" width="230" height="220"><div xmlns="http://www.w3.org/1999/xhtml" class="side-box"><div class="side-item"><div class="side-title">遠用部分</div><div class="side-value">${distance.rangeText}</div></div><div class="side-item"><div class="side-title">フィッティングポイント</div><div class="side-value">${fitting.rangeText}</div></div><div class="side-item"><div class="side-title">近用部分</div><div class="side-value">${near.rangeText}</div></div></div></foreignObject>`;
-  const viewBox = compact ? "0 0 300 320" : "0 0 560 350";
+  const outline = `<path d="M56 118 C72 76,112 55,158 57 C209 59,247 85,265 126 C279 159,273 207,246 236 C219 266,165 275,111 259 C68 246,42 215,39 172 C37 151,43 132,56 118 Z" fill="#fff" stroke="#2563eb" stroke-width="4" stroke-linejoin="round"/><path d="M264 153 C278 144,292 144,306 153" fill="none" stroke="#2563eb" stroke-width="4" stroke-linecap="round"/><path d="M306 126 C324 85,362 59,413 57 C459 55,499 76,515 118 C528 132,534 151,532 172 C529 215,503 246,460 259 C406 275,352 266,325 236 C298 207,292 159,306 126 Z" fill="#fff" stroke="#2563eb" stroke-width="4" stroke-linejoin="round"/>`;
+  const sideSingle = compact ? "" : `<foreignObject x="640" y="140" width="250" height="120"><div xmlns="http://www.w3.org/1999/xhtml" class="side-item"><div class="side-title">処方度数</div><div class="side-value">${single.rangeText}</div></div></foreignObject>`;
+  const sideProgressive = compact ? "" : `<foreignObject x="640" y="112" width="250" height="170"><div xmlns="http://www.w3.org/1999/xhtml" class="side-box"><div class="side-item"><div class="side-title">遠用部分</div><div class="side-value">${distance.rangeText}</div></div><div class="side-item"><div class="side-title">近用部分</div><div class="side-value">${near.rangeText}</div></div></div></foreignObject>`;
+  const sideIndoor = compact ? "" : `<foreignObject x="640" y="80" width="270" height="230"><div xmlns="http://www.w3.org/1999/xhtml" class="side-box"><div class="side-item"><div class="side-title">遠用部分</div><div class="side-value">${distance.rangeText}</div></div><div class="side-item"><div class="side-title">フィッティングポイント</div><div class="side-value">${fitting.rangeText}</div></div><div class="side-item"><div class="side-title">近用部分</div><div class="side-value">${near.rangeText}</div></div></div></foreignObject>`;
+  const viewBox = compact ? "0 0 575 330" : "0 0 930 360";
+  const leftX = 152;
+  const rightX = 419;
+  const centerX = 286;
 
-  if (lensType === "single") return `<div class="diagram-wrap"><svg viewBox="${viewBox}">${outline}<ellipse cx="145" cy="170" rx="102" ry="70" fill="#dbeafe"/><text x="145" y="164" text-anchor="middle" class="zone-text">単焦点</text><text x="145" y="195" text-anchor="middle" class="zone-small">${single.rangeText}</text>${sideSingle}</svg></div>`;
-  if (lensType === "progressive") return `<div class="diagram-wrap"><svg viewBox="${viewBox}">${outline}<ellipse cx="145" cy="138" rx="94" ry="38" fill="#dbeafe"/><ellipse cx="145" cy="208" rx="66" ry="34" fill="#93c5fd"/><text x="145" y="132" text-anchor="middle" class="zone-text">遠用</text><text x="145" y="160" text-anchor="middle" class="zone-small">${distance.rangeText}</text><text x="145" y="202" text-anchor="middle" class="zone-text">近用</text><text x="145" y="230" text-anchor="middle" class="zone-small">${near.rangeText}</text>${sideProgressive}</svg></div>`;
-  return `<div class="diagram-wrap"><svg viewBox="${viewBox}">${outline}<ellipse cx="145" cy="118" rx="84" ry="30" fill="#dbeafe"/><ellipse cx="145" cy="170" rx="72" ry="30" fill="#bfdbfe"/><ellipse cx="145" cy="220" rx="60" ry="30" fill="#93c5fd"/><text x="145" y="111" text-anchor="middle" class="zone-text">遠用</text><text x="145" y="136" text-anchor="middle" class="zone-small">${distance.rangeText}</text><text x="145" y="164" text-anchor="middle" class="zone-text">FP</text><text x="145" y="190" text-anchor="middle" class="zone-small">${fitting.rangeText}</text><text x="145" y="214" text-anchor="middle" class="zone-text">近用</text><text x="145" y="240" text-anchor="middle" class="zone-small">${near.rangeText}</text>${sideIndoor}</svg></div>`;
+  if (lensType === "single") {
+    return `<div class="diagram-wrap"><svg viewBox="${viewBox}">${outline}<ellipse cx="${leftX}" cy="166" rx="96" ry="66" fill="#dbeafe"/><ellipse cx="${rightX}" cy="166" rx="96" ry="66" fill="#dbeafe"/><text x="${centerX}" y="160" text-anchor="middle" class="zone-text">単焦点</text><text x="${centerX}" y="194" text-anchor="middle" class="zone-small">${single.rangeText}</text>${sideSingle}</svg></div>`;
+  }
+  if (lensType === "progressive") {
+    return `<div class="diagram-wrap"><svg viewBox="${viewBox}">${outline}<ellipse cx="${leftX}" cy="132" rx="88" ry="34" fill="#dbeafe"/><ellipse cx="${rightX}" cy="132" rx="88" ry="34" fill="#dbeafe"/><ellipse cx="${leftX}" cy="215" rx="62" ry="32" fill="#93c5fd"/><ellipse cx="${rightX}" cy="215" rx="62" ry="32" fill="#93c5fd"/><text x="${centerX}" y="128" text-anchor="middle" class="zone-text">遠用</text><text x="${centerX}" y="158" text-anchor="middle" class="zone-small">${distance.rangeText}</text><text x="${centerX}" y="211" text-anchor="middle" class="zone-text">近用</text><text x="${centerX}" y="241" text-anchor="middle" class="zone-small">${near.rangeText}</text>${sideProgressive}</svg></div>`;
+  }
+  return `<div class="diagram-wrap"><svg viewBox="${viewBox}">${outline}<ellipse cx="${leftX}" cy="118" rx="80" ry="28" fill="#dbeafe"/><ellipse cx="${rightX}" cy="118" rx="80" ry="28" fill="#dbeafe"/><ellipse cx="${leftX}" cy="170" rx="70" ry="28" fill="#bfdbfe"/><ellipse cx="${rightX}" cy="170" rx="70" ry="28" fill="#bfdbfe"/><ellipse cx="${leftX}" cy="222" rx="58" ry="28" fill="#93c5fd"/><ellipse cx="${rightX}" cy="222" rx="58" ry="28" fill="#93c5fd"/><text x="${centerX}" y="113" text-anchor="middle" class="zone-text">遠用</text><text x="${centerX}" y="140" text-anchor="middle" class="zone-small">${distance.rangeText}</text><text x="${centerX}" y="165" text-anchor="middle" class="zone-text">FP</text><text x="${centerX}" y="192" text-anchor="middle" class="zone-small">${fitting.rangeText}</text><text x="${centerX}" y="217" text-anchor="middle" class="zone-text">近用</text><text x="${centerX}" y="244" text-anchor="middle" class="zone-small">${near.rangeText}</text>${sideIndoor}</svg></div>`;
 }
 
 function conditionRows(lensType, eyeData, accommodation, addPower, fpRate) {
@@ -384,12 +428,6 @@ function makeEyeResult(eyeData, lensType, accommodation, addPower, fpRate) {
   return html;
 }
 
-function makeCompactEyeResult(eyeData, lensType, accommodation, addPower, fpRate) {
-  const zones = enrichZones(getZones(lensType, eyeData.baseRelative, addPower, fpRate), accommodation);
-  const rows = zones.map(zone => `<div class="compact-row"><span>${zone.part}</span><strong>${zone.range.message ? zone.range.message : zone.rangeText}</strong></div>`).join("");
-  return `<div class="compact-eye"><div class="eye-title">👁 ${eyeData.eye === "R" ? "右眼 R" : "左眼 L"}</div>${drawLensDiagram(lensType, zones, true)}<div class="compact-list">${rows}</div></div>`;
-}
-
 function calculate(manual = false) {
   toggleMode();
   updateDisabledStates();
@@ -402,7 +440,7 @@ function calculate(manual = false) {
   const fpRate = getValue("fpRate") / 100;
   let html;
   if (mode === "bothEyes") {
-    html = `<div class="compact-results">${["R","L"].map(eye => makeCompactEyeResult(getEyeData(eye), lensType, accommodation, addPower, fpRate)).join("")}</div>`;
+    html = `<div class="both-eye-results">${["R","L"].map(eye => makeEyeResult(getEyeData(eye), lensType, accommodation, addPower, fpRate)).join("")}</div>`;
   } else {
     html = makeEyeResult(getEyeData(selected), lensType, accommodation, addPower, fpRate);
   }
@@ -416,8 +454,7 @@ function buildPrintPage(pattern, index) {
   const accommodation = getAccommodation();
   const addPower = Number(pattern.addPower) || 0;
   const fpRate = (Number(pattern.fpRate) || 0) / 100;
-  const eyes = ["R", "L"];
-  const eyeHtml = eyes.map(eye => {
+  const eyeHtml = ["R", "L"].map(eye => {
     const data = getEyeData(eye, pattern);
     const zones = enrichZones(getZones(lensType, data.baseRelative, addPower, fpRate), accommodation);
     const rangeRows = zones.map(zone => `<div class="print-range-row"><span>${zone.part}</span><strong>${zone.range.message ? zone.range.message : zone.rangeText}</strong></div>`).join("");
@@ -432,7 +469,7 @@ function buildPrintPage(pattern, index) {
 function printCustomerPdf() {
   saveActivePattern();
   const printArea = document.getElementById("printArea");
-  printArea.innerHTML = prescriptionPatterns.map((pattern, index) => buildPrintPage(pattern, index)).join("");
+  printArea.innerHTML = prescriptionPatterns.slice(0, activePatternCount).map((pattern, index) => buildPrintPage(pattern, index)).join("");
   window.print();
 }
 
