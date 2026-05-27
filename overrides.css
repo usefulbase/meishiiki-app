@@ -18,10 +18,10 @@
   padding:2px;
 }
 .compact-diagram-results .zone-text{
-  font-size:40px;
+  font-size:32px;
 }
 .compact-diagram-results .zone-small{
-  font-size:36px;
+  font-size:29px;
 }
 .compact-diagram-results .result-flex .diagram-wrap svg{
   max-width:100%;
@@ -44,10 +44,10 @@
     font-size:20px;
   }
   .compact-diagram-results .zone-text{
-    font-size:42px;
+    font-size:34px;
   }
   .compact-diagram-results .zone-small{
-    font-size:38px;
+    font-size:31px;
   }
   .compact-diagram-results .eye-result{
     padding:6px;
@@ -56,4 +56,4 @@
     padding:1px;
   }
 }
-/* version: overrides-v3 */
+/* version: overrides-v4 */
