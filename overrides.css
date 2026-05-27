@@ -1,0 +1,34 @@
+/* Lightweight overrides for quick visual tuning */
+.result-flex{
+  grid-template-columns:1fr;
+}
+.diagram-wrap{
+  padding:4px;
+}
+.result-flex .diagram-wrap svg{
+  max-width:680px;
+}
+.zone-text{
+  font-size:24px;
+}
+.zone-small{
+  font-size:22px;
+}
+@media(max-width:720px){
+  .result-flex .diagram-wrap svg{
+    max-width:100%;
+  }
+  .zone-text{
+    font-size:22px;
+  }
+  .zone-small{
+    font-size:20px;
+  }
+  .both-eye-results .zone-text{
+    font-size:20px;
+  }
+  .both-eye-results .zone-small{
+    font-size:18px;
+  }
+}
+/* version: overrides-v1 */
