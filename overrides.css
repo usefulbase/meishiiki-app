@@ -33,6 +33,26 @@
   max-width:120mm;
   margin:0 auto;
 }
+/* 追加表や長い要素が、スマホ表示で全体を横に広げないようにする */
+.app,
+.panel-grid,
+.panel,
+.eye-grid,
+.eye-panel,
+.result-area,
+.result-flex,
+.eye-result,
+.ref-details,
+.ref-table-wrap{
+  min-width:0;
+  max-width:100%;
+  box-sizing:border-box;
+}
+html,
+body{
+  max-width:100%;
+  overflow-x:hidden;
+}
 /* 中近は表示段数が多いため、イラスト内文字を少しだけ小さくする */
 .compact-diagram-results .eye-result:has(text:nth-of-type(5)) .zone-text{
   font-size:28px;
@@ -41,6 +61,7 @@
   font-size:25px;
 }
 .ref-details{
+  width:100%;
   margin-top:10px;
   border:1px solid #dbeafe;
   border-radius:12px;
@@ -54,6 +75,7 @@
   font-weight:700;
   color:#2563eb;
   list-style:none;
+  white-space:normal;
 }
 .ref-details summary::-webkit-details-marker{
   display:none;
@@ -69,12 +91,17 @@
   transform:rotate(90deg);
 }
 .ref-table-wrap{
+  width:100%;
   max-height:220px;
-  overflow:auto;
+  overflow-x:auto;
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
   padding:0 10px 10px;
 }
 .ref-table{
   width:100%;
+  min-width:0;
+  table-layout:fixed;
   border-collapse:collapse;
   font-size:13px;
   background:#fff;
@@ -86,6 +113,7 @@
   padding:7px 8px;
   border-bottom:1px solid #e5e7eb;
   text-align:right;
+  white-space:nowrap;
 }
 .ref-table th{
   position:sticky;
@@ -101,6 +129,7 @@
 .ref-details .note{
   margin:0 10px 10px;
   font-size:11px;
+  white-space:normal;
 }
 @media(max-width:720px){
   .result-flex .diagram-wrap svg{
@@ -132,6 +161,14 @@
   }
   .ref-table-wrap{
     max-height:190px;
+    padding:0 8px 8px;
+  }
+  .ref-table{
+    font-size:12px;
+  }
+  .ref-table th,
+  .ref-table td{
+    padding:6px 6px;
   }
 }
-/* version: overrides-v6 */
+/* version: overrides-v7 */
