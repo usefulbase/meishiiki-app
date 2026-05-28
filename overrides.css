@@ -33,7 +33,7 @@
   max-width:120mm;
   margin:0 auto;
 }
-/* 追加表や長い要素が、スマホ表示で全体を横に広げないようにする */
+/* 追加要素や長い要素が、スマホ表示で全体を横に広げないようにする */
 .app,
 .panel-grid,
 .panel,
@@ -43,7 +43,7 @@
 .result-flex,
 .eye-result,
 .ref-details,
-.ref-table-wrap{
+.ishihara-list{
   min-width:0;
   max-width:100%;
   box-sizing:border-box;
@@ -90,41 +90,44 @@ body{
 .ref-details[open] summary::before{
   transform:rotate(90deg);
 }
-.ref-table-wrap{
+.ishihara-list{
   width:100%;
   max-height:220px;
-  overflow-x:auto;
   overflow-y:auto;
   -webkit-overflow-scrolling:touch;
   padding:0 10px 10px;
 }
-.ref-table{
+.ishihara-row{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+  gap:8px;
+  align-items:center;
   width:100%;
-  min-width:0;
-  table-layout:fixed;
-  border-collapse:collapse;
-  font-size:13px;
-  background:#fff;
-  border-radius:10px;
-  overflow:hidden;
-}
-.ref-table th,
-.ref-table td{
   padding:7px 8px;
   border-bottom:1px solid #e5e7eb;
-  text-align:right;
+  background:#fff;
+  font-size:13px;
+  box-sizing:border-box;
+}
+.ishihara-row span,
+.ishihara-row strong{
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
   white-space:nowrap;
 }
-.ref-table th{
+.ishihara-row strong{
+  text-align:right;
+}
+.ishihara-head{
   position:sticky;
   top:0;
+  z-index:1;
   background:#eff6ff;
   color:#1e40af;
   font-weight:700;
-}
-.ref-table td:first-child,
-.ref-table th:first-child{
-  text-align:left;
+  border-top-left-radius:10px;
+  border-top-right-radius:10px;
 }
 .ref-details .note{
   margin:0 10px 10px;
@@ -159,16 +162,13 @@ body{
   .compact-diagram-results .diagram-wrap{
     padding:1px;
   }
-  .ref-table-wrap{
+  .ishihara-list{
     max-height:190px;
     padding:0 8px 8px;
   }
-  .ref-table{
+  .ishihara-row{
     font-size:12px;
-  }
-  .ref-table th,
-  .ref-table td{
-    padding:6px 6px;
+    padding:6px;
   }
 }
-/* version: overrides-v7 */
+/* version: overrides-v8 */
