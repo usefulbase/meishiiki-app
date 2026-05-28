@@ -115,9 +115,7 @@ body{
   overflow:hidden;
   text-overflow:ellipsis;
   white-space:nowrap;
-}
-.ishihara-row strong{
-  text-align:right;
+  text-align:center;
 }
 .ishihara-head{
   position:sticky;
@@ -171,4 +169,4 @@ body{
     padding:6px;
   }
 }
-/* version: overrides-v8 */
+/* version: overrides-v9 */
