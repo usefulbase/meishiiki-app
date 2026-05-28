@@ -10,7 +10,8 @@
 
   function applyIndoorFpDefault(pattern){
     if (!pattern) return;
-    if (pattern.fpPreset === "custom" && (pattern.fpRate === "50" || pattern.fpRate === "" || pattern.fpRate == null)) {
+    // デフォルト未設定時だけ40にする。手入力された50などの数値は変更しない。
+    if (pattern.fpPreset === "custom" && (pattern.fpRate === "" || pattern.fpRate == null)) {
       pattern.fpRate = "40";
     }
   }
@@ -79,7 +80,6 @@
   function buildComparisonSimulations(mode, lensType, accommodation, addPower, fpRate){
     const eyes = getEyesForSimulation();
     const baseAccommodation = getBaseAccommodationValueForSimulation();
-    const currentRate = getValue("accUseRate") || 1;
     const rateItems = [
       {label:"100%使用", rate:1},
       {label:"2/3使用", rate:0.6667},
@@ -190,10 +190,6 @@
       updateDisabledStates();
       saveActivePattern();
       ensurePatternOrderNames();
-      const active = prescriptionPatterns[activePatternIndex];
-      if (active && getTextValue("fpPreset") === "custom" && getTextValue("fpRate") === "50") {
-        document.getElementById("fpRate").value = active.fpRate || "40";
-      }
       const mode = getTextValue("inputMode");
       const lensType = getTextValue("lensType");
       const selected = getTextValue("selectedEye");
@@ -243,10 +239,8 @@
   };
 
   ensurePatternOrderNames();
-  const fp = document.getElementById("fpRate");
-  if (fp && fp.value === "50") fp.value = "40";
   saveActivePattern();
   updatePatternTabs();
   calculate(false);
 })();
-// version: app-fixes-v5
+// version: app-fixes-v6
