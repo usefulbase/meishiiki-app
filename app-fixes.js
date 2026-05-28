@@ -31,6 +31,106 @@
     return p && p.name ? p.name : fixedPatternName(index);
   }
 
+  function roundQuarter(value){
+    return Math.round(Math.max(0, value) * 4) / 4;
+  }
+
+  function getBaseAccommodationValueForSimulation(){
+    const mode = getAccModeValue();
+    const base = mode === "measured" ? getValue("measuredAcc") : getAgeAccommodation();
+    return roundQuarter(base);
+  }
+
+  function getEyesForSimulation(){
+    const mode = getTextValue("inputMode");
+    const selected = getTextValue("selectedEye");
+    return mode === "bothEyes" ? ["R", "L"] : [selected];
+  }
+
+  function compactRangeText(zone){
+    return zone.range.message ? zone.range.message : zone.rangeText;
+  }
+
+  function buildEyeSimulationLine(eye, lensType, accommodation, addPower, fpRate){
+    const data = getEyeData(eye);
+    const zones = enrichZones(getZones(lensType, data.baseRelative, addPower, fpRate), accommodation);
+    const text = zones.map(zone => `${zone.part} ${compactRangeText(zone)}`).join(" / ");
+    return `<div class="sim-eye-line"><span>${eye === "R" ? "右眼" : "左眼"}</span><strong>${text}</strong></div>`;
+  }
+
+  function buildSimulationRows(items, eyes, lensType){
+    return items.map(item => {
+      const eyeLines = eyes.map(eye => buildEyeSimulationLine(eye, lensType, item.accommodation, item.addPower, item.fpRate)).join("");
+      const sub = item.sub ? `<div class="sim-row-sub">${item.sub}</div>` : "";
+      return `<div class="sim-row"><div class="sim-row-label"><strong>${item.label}</strong>${sub}</div><div class="sim-row-result">${eyeLines}</div></div>`;
+    }).join("");
+  }
+
+  function uniqueByKey(items){
+    const seen = new Set();
+    return items.filter(item => {
+      const key = item.key;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+  }
+
+  function buildComparisonSimulations(mode, lensType, accommodation, addPower, fpRate){
+    const eyes = getEyesForSimulation();
+    const baseAccommodation = getBaseAccommodationValueForSimulation();
+    const currentRate = getValue("accUseRate") || 1;
+    const rateItems = [
+      {label:"100%使用", rate:1},
+      {label:"2/3使用", rate:0.6667},
+      {label:"1/2使用", rate:0.5}
+    ].map(item => ({
+      key:`rate-${item.rate}`,
+      label:item.label,
+      sub:`使用調節力 ${formatPower(roundQuarter(baseAccommodation * item.rate))}`,
+      accommodation:roundQuarter(baseAccommodation * item.rate),
+      addPower,
+      fpRate
+    }));
+
+    let html = `<details class="sim-details"><summary>比較シミュレーションを表示</summary><div class="sim-note">現在の処方案を基準に、条件を変えた場合の明視域を比較します。</div><div class="sim-section"><h3>調節力使用率の比較</h3>${buildSimulationRows(rateItems, eyes, lensType)}</div>`;
+
+    if (lensType !== "single") {
+      const addCandidates = uniqueByKey([
+        addPower - 0.50,
+        addPower,
+        addPower + 0.50
+      ].filter(v => v >= 0).map(v => {
+        const fixed = Math.round(v * 4) / 4;
+        return {
+          key:`add-${fixed.toFixed(2)}`,
+          label:`ADD ${formatPower(fixed)}`,
+          sub: fixed === addPower ? "現在の加入度" : "加入度変更時",
+          accommodation,
+          addPower:fixed,
+          fpRate
+        };
+      }));
+      html += `<div class="sim-section"><h3>加入度変更シミュレーション</h3>${buildSimulationRows(addCandidates, eyes, lensType)}</div>`;
+    }
+
+    if (lensType === "indoor") {
+      const currentFpPercent = Math.round(fpRate * 100);
+      const fpCandidates = uniqueByKey([25, 40, currentFpPercent].filter(v => v >= 0).map(v => ({
+        key:`fp-${v}`,
+        label:`FP ${v}%`,
+        sub: v === currentFpPercent ? "現在のFP加入変化率" : "FP変更時",
+        accommodation,
+        addPower,
+        fpRate:v / 100
+      })));
+      html += `<div class="sim-section"><h3>FP変化率シミュレーション</h3>${buildSimulationRows(fpCandidates, eyes, lensType)}</div>`;
+    }
+
+    html += `<p class="sim-caution">※比較シミュレーションも計算上の目安です。実際の見え方を保証するものではありません。</p></details>`;
+    return html;
+  }
+
   window.updatePatternTabs = updatePatternTabs = function(){
     ensurePatternOrderNames();
     for (let i = 0; i < 3; i++) {
@@ -100,10 +200,11 @@
       const accommodation = getAccommodation();
       const addPower = getValue("addPower");
       const fpRate = getValue("fpRate") / 100;
-      const html = mode === "bothEyes"
+      const resultHtml = mode === "bothEyes"
         ? `<div class="both-eye-results compact-diagram-results">${["R", "L"].map(eye => makeEyeResult(getEyeData(eye), lensType, accommodation, addPower, fpRate)).join("")}</div>`
         : makeEyeResult(getEyeData(selected), lensType, accommodation, addPower, fpRate);
-      document.getElementById("result").innerHTML = html;
+      const simulationHtml = buildComparisonSimulations(mode, lensType, accommodation, addPower, fpRate);
+      document.getElementById("result").innerHTML = resultHtml + simulationHtml;
       updatePatternTabs();
       showUpdatedStatus(manual);
     } catch (e) {
@@ -148,4 +249,4 @@
   updatePatternTabs();
   calculate(false);
 })();
-// version: app-fixes-v4
+// version: app-fixes-v5
