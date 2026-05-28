@@ -40,6 +40,68 @@
 .compact-diagram-results .eye-result:has(text:nth-of-type(5)) .zone-small{
   font-size:25px;
 }
+.ref-details{
+  margin-top:10px;
+  border:1px solid #dbeafe;
+  border-radius:12px;
+  background:#f8fbff;
+  overflow:hidden;
+}
+.ref-details summary{
+  cursor:pointer;
+  padding:10px 12px;
+  font-size:13px;
+  font-weight:700;
+  color:#2563eb;
+  list-style:none;
+}
+.ref-details summary::-webkit-details-marker{
+  display:none;
+}
+.ref-details summary::before{
+  content:"▶";
+  display:inline-block;
+  margin-right:6px;
+  font-size:11px;
+  transition:transform .15s ease;
+}
+.ref-details[open] summary::before{
+  transform:rotate(90deg);
+}
+.ref-table-wrap{
+  max-height:220px;
+  overflow:auto;
+  padding:0 10px 10px;
+}
+.ref-table{
+  width:100%;
+  border-collapse:collapse;
+  font-size:13px;
+  background:#fff;
+  border-radius:10px;
+  overflow:hidden;
+}
+.ref-table th,
+.ref-table td{
+  padding:7px 8px;
+  border-bottom:1px solid #e5e7eb;
+  text-align:right;
+}
+.ref-table th{
+  position:sticky;
+  top:0;
+  background:#eff6ff;
+  color:#1e40af;
+  font-weight:700;
+}
+.ref-table td:first-child,
+.ref-table th:first-child{
+  text-align:left;
+}
+.ref-details .note{
+  margin:0 10px 10px;
+  font-size:11px;
+}
 @media(max-width:720px){
   .result-flex .diagram-wrap svg{
     max-width:100%;
@@ -68,5 +130,8 @@
   .compact-diagram-results .diagram-wrap{
     padding:1px;
   }
+  .ref-table-wrap{
+    max-height:190px;
+  }
 }
-/* version: overrides-v5 */
+/* version: overrides-v6 */
