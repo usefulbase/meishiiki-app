@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#12b8f6"/>
+      <stop offset="0.55" stop-color="#0879f2"/>
+      <stop offset="1" stop-color="#004ee0"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="96" fill="url(#bg)"/>
+  <g fill="none" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="52" y="188" width="186" height="128" rx="48" stroke-width="36"/>
+    <rect x="274" y="188" width="186" height="128" rx="48" stroke-width="36"/>
+    <path d="M238 230c20 18 54 18 74 0" stroke-width="36"/>
+    <path d="M52 232L18 224" stroke-width="36"/>
+    <path d="M460 232l34-8" stroke-width="36"/>
+  </g>
+  <g fill="none" stroke="#ffffff" stroke-linecap="round" opacity="0.96">
+    <path d="M92 250a62 62 0 0 1 106 0" stroke-width="6"/>
+    <path d="M314 250a62 62 0 0 1 106 0" stroke-width="6"/>
+    <path d="M98 278a62 62 0 0 0 94 0" stroke-width="8" stroke-dasharray="2 16"/>
+    <path d="M320 278a62 62 0 0 0 94 0" stroke-width="8" stroke-dasharray="2 16"/>
+    <path d="M145 216v22M145 302v22M76 270h22M192 270h22" stroke-width="10"/>
+    <path d="M367 216v22M367 302v22M298 270h22M414 270h22" stroke-width="10"/>
+  </g>
+  <g fill="#ffffff">
+    <circle cx="145" cy="270" r="28"/>
+    <circle cx="367" cy="270" r="28"/>
+  </g>
+  <g fill="#0061e8">
+    <circle cx="157" cy="258" r="13"/>
+    <circle cx="379" cy="258" r="13"/>
+  </g>
+</svg>
