@@ -9,7 +9,7 @@ const defaultPattern = index => ({
   lensType: "single",
   addPower: "2.00",
   fpPreset: "custom",
-  fpRate: "50",
+  fpRate: "40",
   rxS_R: "-3.00",
   rxC_R: "0.00",
   rxS_L: "-3.00",
@@ -520,4 +520,4 @@ toggleMode();
 updateDisabledStates();
 calculate(false);
 
-// version: v13
+// version: v14
