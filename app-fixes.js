@@ -44,31 +44,27 @@
     const summary = details?.querySelector("summary");
     if (summary) summary.textContent = "年齢別調節力目安表を表示";
     const tableNote = details?.querySelector(".note");
-    if (tableNote) tableNote.textContent = "※アプリでは10〜70歳の間を年齢別目安から線形補間し、10歳以下は12.00D、70歳以上は0.00Dとして扱います。";
+    if (tableNote) tableNote.textContent = "※表にない年齢は、前後の値から線形補間します。70歳以上は0.00Dとして扱います。";
 
     const rows = details?.querySelectorAll(".ishihara-row:not(.ishihara-head)");
     const values = [
       ["10歳", "12.00D"],
-      ["15歳", "10.25D"],
       ["20歳", "8.50D"],
-      ["25歳", "7.75D"],
       ["30歳", "7.00D"],
-      ["35歳", "5.75D"],
       ["40歳", "4.50D"],
       ["45歳", "2.50D"],
       ["50歳", "1.50D"],
       ["55歳", "1.00D"],
       ["60歳", "0.50D"],
       ["65歳", "0.25D"],
-      ["70歳", "0.00D"],
-      ["75歳", "0.00D"],
-      ["80歳", "0.00D"],
-      ["85歳", "0.00D"],
-      ["90歳", "0.00D"]
+      ["70歳以上", "0.00D"]
     ];
     if (rows && rows.length) {
       rows.forEach((row, i) => {
-        if (!values[i]) return;
+        if (!values[i]) {
+          row.remove();
+          return;
+        }
         const age = row.querySelector("span");
         const acc = row.querySelector("strong");
         if (age) age.textContent = values[i][0];
@@ -329,4 +325,4 @@
   updatePatternTabs();
   calculate(false);
 })();
-// version: app-fixes-v7
+// version: app-fixes-v8
