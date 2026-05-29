@@ -28,6 +28,11 @@
 <script src="script.js?v=13"></script>
 <script src="app-fixes.js?v=8"></script>
 <script>
+function normalizeDefaultPatternFpRate(pattern){
+  if (pattern && pattern.fpPreset === "custom" && pattern.fpRate === "50") {
+    pattern.fpRate = "40";
+  }
+}
 function clearAllInputs(){
   const ok = window.confirm("入力内容をすべて初期値に戻しますか？\n処方案B/Cもクリアされます。");
   if (!ok) return;
@@ -35,6 +40,7 @@ function clearAllInputs(){
   activePatternIndex = 0;
   activePatternCount = 1;
   prescriptionPatterns = [defaultPattern(0), defaultPattern(1), defaultPattern(2)];
+  prescriptionPatterns.forEach(normalizeDefaultPatternFpRate);
   const set = (id, value) => {
     const el = document.getElementById(id);
     if (el) el.value = value;
@@ -65,6 +71,39 @@ function clearAllInputs(){
   if (typeof updateDisabledStates === "function") updateDisabledStates();
   if (typeof calculate === "function") calculate(true);
 }
+(function(){
+  prescriptionPatterns.forEach(normalizeDefaultPatternFpRate);
+  if (typeof addPattern === "function") {
+    window.addPattern = addPattern = function(){
+      saveActivePattern();
+      if (activePatternCount >= 3) return;
+      activePatternCount++;
+      const newIndex = activePatternCount - 1;
+      normalizeDefaultPatternFpRate(prescriptionPatterns[newIndex]);
+      activePatternIndex = newIndex;
+      loadPattern(activePatternIndex);
+      updatePatternTabs();
+      updateDisabledStates();
+      calculate(false);
+    };
+  }
+  if (typeof removeActivePattern === "function") {
+    window.removeActivePattern = removeActivePattern = function(){
+      if (activePatternCount <= 1) return;
+      saveActivePattern();
+      prescriptionPatterns.splice(activePatternIndex, 1);
+      const p = defaultPattern(2);
+      normalizeDefaultPatternFpRate(p);
+      prescriptionPatterns.push(p);
+      activePatternCount--;
+      activePatternIndex = Math.min(activePatternIndex, activePatternCount - 1);
+      loadPattern(activePatternIndex);
+      updatePatternTabs();
+      updateDisabledStates();
+      calculate(false);
+    };
+  }
+})();
 </script>
 </body>
 </html>
