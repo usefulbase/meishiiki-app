@@ -33,6 +33,18 @@ function normalizeDefaultPatternFpRate(pattern){
     pattern.fpRate = "40";
   }
 }
+function syncInitialFpRateDisplay(){
+  if (!Array.isArray(prescriptionPatterns)) return;
+  prescriptionPatterns.forEach(normalizeDefaultPatternFpRate);
+  if (activePatternIndex === 0) {
+    const fp = document.getElementById("fpRate");
+    if (fp && fp.value === "50" && prescriptionPatterns[0] && prescriptionPatterns[0].fpRate === "40") {
+      fp.value = "40";
+      if (typeof saveActivePattern === "function") saveActivePattern();
+      if (typeof calculate === "function") calculate(false);
+    }
+  }
+}
 function clearAllInputs(){
   const ok = window.confirm("入力内容をすべて初期値に戻しますか？\n処方案B/Cもクリアされます。");
   if (!ok) return;
@@ -72,7 +84,7 @@ function clearAllInputs(){
   if (typeof calculate === "function") calculate(true);
 }
 (function(){
-  prescriptionPatterns.forEach(normalizeDefaultPatternFpRate);
+  syncInitialFpRateDisplay();
   if (typeof addPattern === "function") {
     window.addPattern = addPattern = function(){
       saveActivePattern();
