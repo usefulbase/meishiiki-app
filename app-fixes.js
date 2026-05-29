@@ -32,6 +32,90 @@
     return p && p.name ? p.name : fixedPatternName(index);
   }
 
+  function applyAgeEstimateLabels(){
+    const option = document.querySelector('#ageFormula option[value="ishihara"]');
+    if (option) option.textContent = "年齢別目安";
+
+    const accPanel = document.getElementById("ageFormulaLabel")?.closest(".panel");
+    const note = accPanel?.querySelector(".note");
+    if (note) note.textContent = "Hofstetter最小値：15 − 0.25×年齢。年齢別目安は表の値から線形補間。";
+
+    const details = document.querySelector(".ref-details");
+    const summary = details?.querySelector("summary");
+    if (summary) summary.textContent = "年齢別調節力目安表を表示";
+    const tableNote = details?.querySelector(".note");
+    if (tableNote) tableNote.textContent = "※アプリでは10〜70歳の間を年齢別目安から線形補間し、10歳以下は12.00D、70歳以上は0.00Dとして扱います。";
+
+    const rows = details?.querySelectorAll(".ishihara-row:not(.ishihara-head)");
+    const values = [
+      ["10歳", "12.00D"],
+      ["15歳", "10.25D"],
+      ["20歳", "8.50D"],
+      ["25歳", "7.75D"],
+      ["30歳", "7.00D"],
+      ["35歳", "5.75D"],
+      ["40歳", "4.50D"],
+      ["45歳", "2.50D"],
+      ["50歳", "1.50D"],
+      ["55歳", "1.00D"],
+      ["60歳", "0.50D"],
+      ["65歳", "0.25D"],
+      ["70歳", "0.00D"],
+      ["75歳", "0.00D"],
+      ["80歳", "0.00D"],
+      ["85歳", "0.00D"],
+      ["90歳", "0.00D"]
+    ];
+    if (rows && rows.length) {
+      rows.forEach((row, i) => {
+        if (!values[i]) return;
+        const age = row.querySelector("span");
+        const acc = row.querySelector("strong");
+        if (age) age.textContent = values[i][0];
+        if (acc) acc.textContent = values[i][1];
+      });
+    }
+  }
+
+  window.getIshiharaAccommodation = getIshiharaAccommodation = function(age){
+    const points = [
+      {age:10, acc:12.00},
+      {age:20, acc:8.50},
+      {age:30, acc:7.00},
+      {age:40, acc:4.50},
+      {age:45, acc:2.50},
+      {age:50, acc:1.50},
+      {age:55, acc:1.00},
+      {age:60, acc:0.50},
+      {age:65, acc:0.25},
+      {age:70, acc:0.00}
+    ];
+    if (age <= 10) return 12;
+    if (age >= 70) return 0;
+    for (let i = 0; i < points.length - 1; i++) {
+      const a = points[i];
+      const b = points[i + 1];
+      if (age >= a.age && age <= b.age) {
+        const r = (age - a.age) / (b.age - a.age);
+        return a.acc + (b.acc - a.acc) * r;
+      }
+    }
+    return 0;
+  };
+
+  window.getBaseAccommodationLabel = getBaseAccommodationLabel = function(){
+    const mode = getAccModeValue();
+    if (mode === "measured") return `実測値 ${formatPower(getValue("measuredAcc"))}`;
+    const label = getTextValue("ageFormula") === "hofstetterMin" ? "Hofstetter最小値" : "年齢別目安";
+    return `${label} ${formatPower(Math.round(getAgeAccommodation() * 4) / 4)}`;
+  };
+
+  window.getPatternBaseAccommodationLabel = getPatternBaseAccommodationLabel = function(pattern){
+    if (pattern.accMode !== "age") return `実測値 ${formatPower(Number(pattern.measuredAcc || 0))}`;
+    const label = pattern.ageFormula === "hofstetterMin" ? "Hofstetter最小値" : "年齢別目安";
+    return `${label} ${formatPower(Math.round(getPatternAgeAccommodation(pattern) * 4) / 4)}`;
+  };
+
   function roundQuarter(value){
     return Math.round(Math.max(0, value) * 4) / 4;
   }
@@ -186,6 +270,7 @@
 
   window.calculate = calculate = function(manual = false){
     try {
+      applyAgeEstimateLabels();
       toggleMode();
       updateDisabledStates();
       saveActivePattern();
@@ -239,8 +324,9 @@
   };
 
   ensurePatternOrderNames();
+  applyAgeEstimateLabels();
   saveActivePattern();
   updatePatternTabs();
   calculate(false);
 })();
-// version: app-fixes-v6
+// version: app-fixes-v7
