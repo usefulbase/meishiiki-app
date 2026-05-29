@@ -12,7 +12,7 @@
 </head>
 <body>
 <div class="app">
-  <div class="header"><div class="title-wrap"><h1><span class="icon">👁</span>メガネ明視域計算アプリ</h1><p>完全矯正値・処方値・加入度・調節力から明視域を計算します</p></div><div class="action-area"><button id="calcBtn" class="main-btn" type="button" onclick="manualCalculate()">↻ 再計算</button><button class="sub-btn" type="button" onclick="printCustomerPdf()">PDF保存</button><div id="updateStatus" class="update-status">入力すると自動更新</div></div></div>
+  <div class="header"><div class="title-wrap"><h1><span class="icon">👁</span>メガネ明視域計算アプリ</h1><p>完全矯正値・処方値・加入度・調節力から明視域を計算します</p></div><div class="action-area"><button id="calcBtn" class="main-btn" type="button" onclick="manualCalculate()">↻ 再計算</button><button class="sub-btn" type="button" onclick="printCustomerPdf()">PDF保存</button><button class="sub-btn" type="button" onclick="clearAllInputs()">入力クリア</button><div id="updateStatus" class="update-status">入力すると自動更新</div></div></div>
   <div class="panel-grid">
     <section class="panel"><h2>👥 入力モード</h2><label>入力方法<select id="inputMode"><option value="singleEye">片眼入力</option><option value="bothEyes">左右同時入力</option></select></label><div id="eyeSelectArea"><label>計算する眼<select id="selectedEye"><option value="R">右眼 R</option><option value="L">左眼 L</option></select></label></div></section>
     <section class="panel pattern-panel"><h2>📝 処方案</h2><div class="pattern-tabs"><button type="button" class="pattern-tab active" id="patternTab0" onclick="switchPattern(0)">処方案A</button><button type="button" class="pattern-tab hidden" id="patternTab1" onclick="switchPattern(1)">処方案B</button><button type="button" class="pattern-tab hidden" id="patternTab2" onclick="switchPattern(2)">処方案C</button></div><div class="pattern-actions"><button type="button" class="small-btn" id="addPatternBtn" onclick="addPattern()">＋ 処方案を追加</button><button type="button" class="small-btn danger" id="removePatternBtn" onclick="removeActivePattern()">この案を使わない</button></div><label>処方案名<input id="patternName" type="text" value="処方案A"></label></section>
@@ -27,5 +27,44 @@
 <div id="keypad" class="keypad"><div class="keypad-title" id="keypadTitle">数値入力</div><div class="keypad-display" id="keypadDisplay"></div><div class="keypad-grid"><button type="button" onclick="pressKey('7')">7</button><button type="button" onclick="pressKey('8')">8</button><button type="button" onclick="pressKey('9')">9</button><button type="button" onclick="backspaceKey()">⌫</button><button type="button" onclick="pressKey('4')">4</button><button type="button" onclick="pressKey('5')">5</button><button type="button" onclick="pressKey('6')">6</button><button type="button" onclick="clearKey()">C</button><button type="button" onclick="pressKey('1')">1</button><button type="button" onclick="pressKey('2')">2</button><button type="button" onclick="pressKey('3')">3</button><button type="button" onclick="toggleSign()">±</button><button type="button" onclick="pressKey('0')">0</button><button type="button" onclick="pressKey('.')">.</button><button type="button" onclick="stepValue(-0.25)">-0.25</button><button type="button" onclick="stepValue(0.25)">+0.25</button></div><button class="done-btn" type="button" onclick="closeKeypad()">決定</button></div>
 <script src="script.js?v=13"></script>
 <script src="app-fixes.js?v=8"></script>
+<script>
+function clearAllInputs(){
+  const ok = window.confirm("入力内容をすべて初期値に戻しますか？\n処方案B/Cもクリアされます。");
+  if (!ok) return;
+  if (typeof closeKeypad === "function") closeKeypad();
+  activePatternIndex = 0;
+  activePatternCount = 1;
+  prescriptionPatterns = [defaultPattern(0), defaultPattern(1), defaultPattern(2)];
+  const set = (id, value) => {
+    const el = document.getElementById(id);
+    if (el) el.value = value;
+  };
+  set("inputMode", "singleEye");
+  set("selectedEye", "R");
+  set("patternName", "処方案A");
+  set("lensType", "single");
+  set("addPower", "2.00");
+  set("fpPreset", "custom");
+  set("fpRate", "40");
+  set("fullS_R", "-3.00");
+  set("fullC_R", "0.00");
+  set("fullS_L", "-3.00");
+  set("fullC_L", "0.00");
+  set("rxS_R", "-3.00");
+  set("rxC_R", "0.00");
+  set("rxS_L", "-3.00");
+  set("rxC_L", "0.00");
+  set("measuredAcc", "2.50");
+  set("age", "45");
+  set("ageFormula", "ishihara");
+  set("accUseRate", "1");
+  if (typeof setAccModeValue === "function") setAccModeValue("measured");
+  if (typeof saveActivePattern === "function") saveActivePattern();
+  if (typeof updatePatternTabs === "function") updatePatternTabs();
+  if (typeof toggleMode === "function") toggleMode();
+  if (typeof updateDisabledStates === "function") updateDisabledStates();
+  if (typeof calculate === "function") calculate(true);
+}
+</script>
 </body>
 </html>
