@@ -9,7 +9,7 @@
 <link rel="manifest" href="manifest.json?v=4">
 <link rel="stylesheet" href="style.css?v=12">
 <link rel="stylesheet" href="overrides.css?v=10">
-<link rel="stylesheet" href="view-map.css?v=3">
+<link rel="stylesheet" href="view-map.css?v=4">
 </head>
 <body>
 <div class="app">
@@ -28,7 +28,7 @@
 <div id="keypad" class="keypad"><div class="keypad-title" id="keypadTitle">数値入力</div><div class="keypad-display" id="keypadDisplay"></div><div class="keypad-grid"><button type="button" onclick="pressKey('7')">7</button><button type="button" onclick="pressKey('8')">8</button><button type="button" onclick="pressKey('9')">9</button><button type="button" onclick="backspaceKey()">⌫</button><button type="button" onclick="pressKey('4')">4</button><button type="button" onclick="pressKey('5')">5</button><button type="button" onclick="pressKey('6')">6</button><button type="button" onclick="clearKey()">C</button><button type="button" onclick="pressKey('1')">1</button><button type="button" onclick="pressKey('2')">2</button><button type="button" onclick="pressKey('3')">3</button><button type="button" onclick="toggleSign()">±</button><button type="button" onclick="pressKey('0')">0</button><button type="button" onclick="pressKey('.')">.</button><button type="button" onclick="stepValue(-0.25)">-0.25</button><button type="button" onclick="stepValue(0.25)">+0.25</button></div><button class="done-btn" type="button" onclick="closeKeypad()">決定</button></div>
 <script src="script.js?v=14"></script>
 <script src="app-fixes.js?v=8"></script>
-<script src="view-map.js?v=4"></script>
+<script src="view-map.js?v=5"></script>
 <script>
 function clearAllInputs(){
   const ok = window.confirm("入力内容をすべて初期値に戻しますか？\n処方案B/Cもクリアされます。");
