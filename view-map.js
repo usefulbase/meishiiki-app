@@ -14,6 +14,9 @@
     {label:"22cm", meter:0.22}
   ];
 
+  let simAddOffset = 0;
+  let simAccOffset = 0;
+
   function getMapModel(lensType){
     if (lensType === "progressive") {
       return {
@@ -40,6 +43,51 @@
     const mode = getTextValue("inputMode");
     const selected = getTextValue("selectedEye") || "R";
     return mode === "bothEyes" ? ["R", "L"] : [selected];
+  }
+
+  function roundQuarter(value){
+    return Math.round(value * 4) / 4;
+  }
+
+  function formatSignedPower(value){
+    const n = roundQuarter(value);
+    return `${n >= 0 ? "+" : ""}${n.toFixed(2)}D`;
+  }
+
+  function formatPowerPlain(value){
+    return `${roundQuarter(value).toFixed(2)}D`;
+  }
+
+  function clamp(value, min, max){
+    return Math.min(max, Math.max(min, value));
+  }
+
+  function getSimAddPower(){
+    return Math.max(0, roundQuarter(getValue("addPower") + simAddOffset));
+  }
+
+  function getSimAccommodation(){
+    return Math.max(0, roundQuarter(getAccommodation() + simAccOffset));
+  }
+
+  function changeSim(kind, step){
+    if (kind === "add") {
+      const base = getValue("addPower");
+      const next = clamp(roundQuarter(simAddOffset + step), -1, 1);
+      simAddOffset = Math.max(-base, next);
+    }
+    if (kind === "acc") {
+      const base = getAccommodation();
+      const next = clamp(roundQuarter(simAccOffset + step), -1, 1);
+      simAccOffset = Math.max(-base, next);
+    }
+    appendViewMap();
+  }
+
+  function resetSim(){
+    simAddOffset = 0;
+    simAccOffset = 0;
+    appendViewMap();
   }
 
   function addAtPosition(position, lensType, addPower, fpRate){
@@ -81,8 +129,8 @@
     const lensType = getTextValue("lensType");
     const model = getMapModel(lensType);
     const positions = model.positions;
-    const accommodation = getAccommodation();
-    const addPower = getValue("addPower");
+    const accommodation = getSimAccommodation();
+    const addPower = getSimAddPower();
     const fpRate = getValue("fpRate") / 100;
     const data = getEyeData(eye);
     const width = 760;
@@ -141,18 +189,36 @@
     </svg>`;
   }
 
+  function buildControlsHtml(){
+    return `<div class="view-map-controls"><div class="view-map-controls-head"><strong>シミュレーション操作</strong><span>入力値は変更せず、グラフだけ仮想的に変化します</span></div><div class="view-map-control-grid"><div class="view-map-control"><span>加入度 ADD</span><div class="view-map-stepper"><button type="button" data-view-map-action="add-down">−0.25</button><strong>${formatPowerPlain(getSimAddPower())}<em>${simAddOffset === 0 ? "基準" : formatSignedPower(simAddOffset)}</em></strong><button type="button" data-view-map-action="add-up">＋0.25</button></div></div><div class="view-map-control"><span>調節力</span><div class="view-map-stepper"><button type="button" data-view-map-action="acc-down">−0.25</button><strong>${formatPowerPlain(getSimAccommodation())}<em>${simAccOffset === 0 ? "基準" : formatSignedPower(simAccOffset)}</em></strong><button type="button" data-view-map-action="acc-up">＋0.25</button></div></div></div><button class="view-map-reset" type="button" data-view-map-action="reset">リセット</button></div>`;
+  }
+
   function buildMapHtml(){
     const lensType = getTextValue("lensType");
     if (lensType === "single") return "";
     const eyes = currentEyes();
     const rowsText = lensType === "progressive" ? "縦軸5段階" : "縦軸7段階 / FPは上から3段目";
+    const controls = buildControlsHtml();
     const maps = eyes.map(eye => {
       const label = eye === "R" ? "右眼 R" : "左眼 L";
       return `<div class="view-map-box"><div class="view-map-title"><strong>${label} 距離別見え方マップ</strong><span>${rowsText} / 濃いほど調節負担が少ない目安</span></div><div class="view-map-svg-wrap">${buildSvgForEye(eye)}</div></div>`;
     }).join("");
 
     const fpLegend = lensType === "indoor" ? "<span>破線：FP位置</span>" : "";
-    return `<details class="view-map-details"><summary>距離別見え方マップを表示</summary>${maps}<div class="view-map-box"><div class="view-map-legend"><span><i class="view-map-dot dark"></i>調節負担が少ない</span><span><i class="view-map-dot light"></i>調節負担が大きい</span><span>空白：範囲外の目安</span>${fpLegend}</div><p class="view-map-note">※このマップは、正確なレンズ設計再現ではなく、加入量を上下方向に補間した説明用モデルです。各距離で必要な調節量を「必要調節量＝距離の逆数D−その位置の完全矯正との差」で求め、必要調節量が0以上かつ使用調節力以内なら表示しています。濃さは調節負担の少なさの目安です。実際の見え方は、レンズ設計、明瞭域の幅、視線、姿勢、フィッティング、慣れなどでも変わります。</p></div></details>`;
+    return `<details class="view-map-details" open><summary>距離別見え方マップを表示</summary><div class="view-map-box">${controls}</div>${maps}<div class="view-map-box"><div class="view-map-legend"><span><i class="view-map-dot dark"></i>調節負担が少ない</span><span><i class="view-map-dot light"></i>調節負担が大きい</span><span>空白：範囲外の目安</span>${fpLegend}</div><p class="view-map-note">※このマップは、正確なレンズ設計再現ではなく、加入量を上下方向に補間した説明用モデルです。各距離で必要な調節量を「必要調節量＝距離の逆数D−その位置の完全矯正との差」で求め、必要調節量が0以上かつ使用調節力以内なら表示しています。濃さは調節負担の少なさの目安です。実際の見え方は、レンズ設計、明瞭域の幅、視線、姿勢、フィッティング、慣れなどでも変わります。</p></div></details>`;
+  }
+
+  function bindControlEvents(container){
+    container.querySelectorAll("[data-view-map-action]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const action = btn.dataset.viewMapAction;
+        if (action === "add-down") changeSim("add", -0.25);
+        if (action === "add-up") changeSim("add", 0.25);
+        if (action === "acc-down") changeSim("acc", -0.25);
+        if (action === "acc-up") changeSim("acc", 0.25);
+        if (action === "reset") resetSim();
+      });
+    });
   }
 
   function appendViewMap(){
@@ -166,6 +232,7 @@
     div.id = "viewMapContainer";
     div.innerHTML = html;
     result.appendChild(div);
+    bindControlEvents(div);
   }
 
   if (typeof calculate === "function") {
@@ -177,4 +244,4 @@
     setTimeout(appendViewMap, 0);
   }
 })();
-// version: view-map-v2
+// version: view-map-v3
