@@ -16,6 +16,7 @@
 
   let simAddOffset = 0;
   let simAccOffset = 0;
+  let lastPatternIndex = typeof activePatternIndex === "number" ? activePatternIndex : 0;
 
   function getMapModel(lensType){
     if (lensType === "progressive") {
@@ -62,6 +63,11 @@
     return Math.min(max, Math.max(min, value));
   }
 
+  function clearSimOffsets(){
+    simAddOffset = 0;
+    simAccOffset = 0;
+  }
+
   function getSimAddPower(){
     return Math.max(0, roundQuarter(getValue("addPower") + simAddOffset));
   }
@@ -85,9 +91,16 @@
   }
 
   function resetSim(){
-    simAddOffset = 0;
-    simAccOffset = 0;
+    clearSimOffsets();
     appendViewMap();
+  }
+
+  function resetSimIfPatternChanged(){
+    const current = typeof activePatternIndex === "number" ? activePatternIndex : 0;
+    if (current !== lastPatternIndex) {
+      clearSimOffsets();
+      lastPatternIndex = current;
+    }
   }
 
   function addAtPosition(position, lensType, addPower, fpRate){
@@ -205,7 +218,7 @@
     }).join("");
 
     const fpLegend = lensType === "indoor" ? "<span>破線：FP位置</span>" : "";
-    return `<details class="view-map-details" open><summary>距離別見え方マップを表示</summary><div class="view-map-box">${controls}</div>${maps}<div class="view-map-box"><div class="view-map-legend"><span><i class="view-map-dot dark"></i>調節負担が少ない</span><span><i class="view-map-dot light"></i>調節負担が大きい</span><span>空白：範囲外の目安</span>${fpLegend}</div><p class="view-map-note">※このマップは、正確なレンズ設計再現ではなく、加入量を上下方向に補間した説明用モデルです。各距離で必要な調節量を「必要調節量＝距離の逆数D−その位置の完全矯正との差」で求め、必要調節量が0以上かつ使用調節力以内なら表示しています。濃さは調節負担の少なさの目安です。実際の見え方は、レンズ設計、明瞭域の幅、視線、姿勢、フィッティング、慣れなどでも変わります。</p></div></details>`;
+    return `<details class="view-map-details" open><summary>距離別見え方マップを表示</summary>${maps}<div class="view-map-box view-map-control-box">${controls}</div><div class="view-map-box"><div class="view-map-legend"><span><i class="view-map-dot dark"></i>調節負担が少ない</span><span><i class="view-map-dot light"></i>調節負担が大きい</span><span>空白：範囲外の目安</span>${fpLegend}</div><p class="view-map-note">※このマップは、正確なレンズ設計再現ではなく、加入量を上下方向に補間した説明用モデルです。各距離で必要な調節量を「必要調節量＝距離の逆数D−その位置の完全矯正との差」で求め、必要調節量が0以上かつ使用調節力以内なら表示しています。濃さは調節負担の少なさの目安です。実際の見え方は、レンズ設計、明瞭域の幅、視線、姿勢、フィッティング、慣れなどでも変わります。</p></div></details>`;
   }
 
   function bindControlEvents(container){
@@ -239,9 +252,10 @@
     const originalCalculate = calculate;
     window.calculate = calculate = function(manual = false){
       originalCalculate(manual);
+      resetSimIfPatternChanged();
       appendViewMap();
     };
     setTimeout(appendViewMap, 0);
   }
 })();
-// version: view-map-v3
+// version: view-map-v4
