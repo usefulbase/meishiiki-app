@@ -14,6 +14,11 @@
     {label:"22cm", meter:0.22}
   ];
 
+  const ADD_MIN = 0;
+  const ADD_MAX = 3.5;
+  const ACC_MIN = 0;
+  const ACC_MAX = 12;
+
   let simAddOffset = 0;
   let simAccOffset = 0;
   let lastPatternIndex = typeof activePatternIndex === "number" ? activePatternIndex : 0;
@@ -71,24 +76,26 @@
   }
 
   function getSimAddPower(){
-    return Math.max(0, roundQuarter(getValue("addPower") + simAddOffset));
+    return clamp(roundQuarter(getValue("addPower") + simAddOffset), ADD_MIN, ADD_MAX);
   }
 
   function getSimAccommodation(){
-    return Math.max(0, roundQuarter(getAccommodation() + simAccOffset));
+    return clamp(roundQuarter(getAccommodation() + simAccOffset), ACC_MIN, ACC_MAX);
   }
 
   function changeSim(kind, step){
     mapOpen = true;
     if (kind === "add") {
       const base = getValue("addPower");
-      const next = clamp(roundQuarter(simAddOffset + step), -1, 1);
-      simAddOffset = Math.max(-base, next);
+      const current = getSimAddPower();
+      const nextValue = clamp(roundQuarter(current + step), ADD_MIN, ADD_MAX);
+      simAddOffset = roundQuarter(nextValue - base);
     }
     if (kind === "acc") {
       const base = getAccommodation();
-      const next = clamp(roundQuarter(simAccOffset + step), -1, 1);
-      simAccOffset = Math.max(-base, next);
+      const current = getSimAccommodation();
+      const nextValue = clamp(roundQuarter(current + step), ACC_MIN, ACC_MAX);
+      simAccOffset = roundQuarter(nextValue - base);
     }
     appendViewMap({keepScroll:true});
   }
@@ -302,4 +309,4 @@
     setTimeout(() => appendViewMap({keepScroll:false}), 0);
   }
 })();
-// version: view-map-v5
+// version: view-map-v6
