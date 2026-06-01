@@ -1,4 +1,4 @@
-// Experimental distance view map loaded after app-fixes.js
+// Distance view map loaded after script.js
 (function(){
   const DISTANCES = [
     {label:"∞", meter:Infinity},
